@@ -4,11 +4,16 @@ import App from "./App.tsx";
 import "./index.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { InGamePage } from "./routes/ingame/page.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+  },
+  {
+    path: "/game",
+    element: <InGamePage />,
   },
 ]);
 
