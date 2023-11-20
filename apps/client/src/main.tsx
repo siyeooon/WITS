@@ -4,7 +4,7 @@ import App from "./App.tsx";
 import "./index.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { SceneController } from "./routes/ingame/page.tsx";
+import { SceneController } from "./pages/ingame/page.tsx";
 import { AnimatePresence } from "framer-motion";
 
 const router = createBrowserRouter([

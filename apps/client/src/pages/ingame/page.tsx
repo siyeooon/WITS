@@ -1,7 +1,7 @@
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
-import SelectThemeScene from "./scenes/SelectThemeScene";
-import { InRoundScene } from "./scenes/InRoundScene";
+import SelectThemeScene from "../scenes/SelectThemeScene";
+import { InRoundScene } from "../scenes/InRoundScene";
 
 const enum EGameStatus {
   SelectTheme,

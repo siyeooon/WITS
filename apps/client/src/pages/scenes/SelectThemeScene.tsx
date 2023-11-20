@@ -1,7 +1,6 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
-import { cn } from "../../../lib/utils";
+import { cn } from "../../lib/utils";
 import { motion } from "framer-motion";
 
 const Avatar: React.FC<{ text: string }> = ({ text }) => {
