@@ -4,7 +4,8 @@ import App from "./App.tsx";
 import "./index.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { InGamePage } from "./routes/ingame/page.tsx";
+import { SceneController } from "./routes/ingame/page.tsx";
+import { AnimatePresence } from "framer-motion";
 
 const router = createBrowserRouter([
   {
@@ -13,7 +14,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/game",
-    element: <InGamePage />,
+    element: (
+      <AnimatePresence>
+        <SceneController />
+      </AnimatePresence>
+    ),
   },
 ]);
 
