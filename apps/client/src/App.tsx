@@ -7,6 +7,7 @@ function App() {
     <Routes>
       <Route path="/" Component={router.home}/>
       <Route path="/ingame" Component={router.game}/>
+      <Route path="/ranking" Component={router.totalRanking}/>
     </Routes>
   );
 }
