@@ -5,7 +5,8 @@ import * as router from './routes';
 function App() {
   return (
     <Routes>
-      <Route path="/" Component={router.InGame}/>
+      <Route path="/" Component={router.home}/>
+      <Route path="/ingame" Component={router.game}/>
     </Routes>
   );
 }
