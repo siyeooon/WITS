@@ -1,0 +1,13 @@
+@mixin entireContainer($background-color:white){
+    width: 100vw;
+    height: 100vh;
+    background-color: $background-color;
+    display: flex;
+    flex-direction: column;
+}
+
+@mixin centerContainer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
