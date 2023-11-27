@@ -3,9 +3,13 @@ import {
   bigint,
   varchar,
   uniqueIndex,
+  text,
 } from "drizzle-orm/mysql-core";
 
 export const songs = mysqlTable("songs", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  name: varchar("name", { length: 256 }),
+  title: varchar("name", { length: 256 }),
+  artist: varchar("name", { length: 256 }),
+  previewUrl: text("preview_url"),
+  albumUrl: text("album_url"),
 });

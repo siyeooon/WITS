@@ -1,4 +1,5 @@
 {
+  "name": "wits",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -7,11 +8,11 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "dotenv-cli": "^7.3.0",
     "eslint": "^8.54.0",
     "prettier": "^3.1.0",
     "tsconfig": "workspace:*",
     "turbo": "latest"
   },
-  "packageManager": "pnpm@8.9.0",
-  "name": "wits"
+  "packageManager": "pnpm@8.9.0"
 }

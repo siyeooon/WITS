@@ -11,7 +11,7 @@ export const themes = mysqlTable("themes", {
   name: varchar("name", { length: 256 }),
 });
 
-export const songsToThemes = mysqlTable("songsToThemes", {
+export const songsToThemes = mysqlTable("songs_to_themes", {
   userId: bigint("song_id", { mode: "number" })
     .notNull()
     .references(() => songs.id),
