@@ -1,6 +1,6 @@
-import React,{useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 
 const Home  = () => {
-    return(<div></div>)
+    return(<div>HOME</div>)
 }
-export default Home; 
+export default Home;
