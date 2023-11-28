@@ -1,10 +1,9 @@
 import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
 import http from "http";
 import WebSocket from "ws";
 import { shuffleArray } from "./utils/shuffleArray";
-
-dotenv.config();
+import { db, schema } from "../database";
+import { eq, sql } from "drizzle-orm";
 
 const app: Express = express();
 const port = process.env.PORT;
@@ -44,12 +43,17 @@ let gameStatus = EGameStatus.SELECT_THEME;
 
 const connections: WebSocket[] = [];
 
-async function gameLoop() {
+async function selectThemeStage() {
   /**
    * 테마 선택
    */
-  // TODO: 랜덤 테마 선택
-  let availableThemes = ["A", "B", "C", "D", "E", "F"];
+  const MAX_SELECT_THEME = 6;
+
+  const availableThemes = await db
+    .select()
+    .from(schema.themes)
+    .orderBy(sql`RAND()`)
+    .limit(MAX_SELECT_THEME);
 
   // TODO: 랜덤 테마 선택 데이터 전송
   connections.forEach((connection) => {
@@ -59,20 +63,43 @@ async function gameLoop() {
   // 10초간 사용자로부터 테마 수집
   const themeSelectResult = {};
 
-  // TODO: 테마 선택 이벤트 수신
+  // TODO: 테마 선택 이벤트 수신 시작
+
   await new Promise((resolve) => setTimeout(resolve, 10000));
+
+  // TODO: 테마 선택 이벤트 수신 종료
 
   const themeSelectResultIndex = Math.floor(
     Math.random() * availableThemes.length
   );
 
+  const selectedThemeId = 1;
+
+  return selectedThemeId;
+}
+
+async function gameLoop() {
+  const selectedThemeId = await selectThemeStage();
+
+  /**
+   * 라운드 준비
+   */
   const MAX_ROUND = 10;
 
-  // TODO: 테마에 맞는 곡 전체 Fetch
-  const songList = new Array(1000).fill(0);
-  shuffleArray(songList);
+  // 테마에 맞는 곡 전체 Fetch
+  const selectedThemeSongs = await db
+    .select()
+    .from(schema.songs)
+    .leftJoin(
+      schema.songsToThemes,
+      eq(schema.songs.id, schema.songsToThemes.songId)
+    )
+    .where(eq(schema.songsToThemes.themeId, selectedThemeId));
 
-  let roundInfos = songList.slice(MAX_ROUND).map((_, i) => ({
+  // 랜덤 셔플
+  shuffleArray(selectedThemeSongs);
+
+  let roundInfos = selectedThemeSongs.slice(MAX_ROUND).map((_, i) => ({
     musicName: `SONG_${i + 1}`,
   }));
 

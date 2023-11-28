@@ -12,10 +12,10 @@ export const themes = mysqlTable("themes", {
 });
 
 export const songsToThemes = mysqlTable("songs_to_themes", {
-  userId: bigint("song_id", { mode: "number" })
+  songId: bigint("song_id", { mode: "number" })
     .notNull()
     .references(() => songs.id),
-  groupId: bigint("theme_id", { mode: "number" })
+  themeId: bigint("theme_id", { mode: "number" })
     .notNull()
     .references(() => themes.id),
 });

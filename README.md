@@ -1,10 +1,8 @@
 # 웹 시스템 설계 - Wits
 
-This is an official starter Turborepo.
-
 ## Requirement
 
-- [pnpm](https://pnpm.io/ko/installation) (NPM 설치 추천)
+- [pnpm](https://pnpm.io/ko/installation) (NPM으로 설치 진행 추천)
 
 ```sh
 npm install -g pnpm
@@ -39,6 +37,12 @@ This Turborepo has some additional tools already setup for you:
 
 ```
 pnpm dev
+```
+
+데이터베이스 PUSH (개발용)
+
+```
+pnpm db:push
 ```
 
 ## Build
