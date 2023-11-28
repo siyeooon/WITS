@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import * as router from './routes';
+import { LoginProvider } from './context/loginContext';
 
 function App() {
   return (
