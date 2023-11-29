@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  client:
+    container_name: wits-client
+    build:
+      context: .
+      dockerfile: ./apps/client/Dockerfile
+    restart: always
+    ports:
+      - 8888:80
