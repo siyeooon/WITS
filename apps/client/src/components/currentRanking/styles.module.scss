@@ -1,0 +1,59 @@
+@import '../../styles/common';
+.container{
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: rgba(0, 0, 0, 0.70);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+}
+
+.currentRankingContainer{
+    position: relative;
+    border-radius: 11.671px;
+    background: linear-gradient(111deg, rgba(239, 238, 238, 0.32) 2.82%, rgba(239, 238, 238, 0.06) 90.94%);
+    width: 95vw;
+    height: 60vh;
+    backdrop-filter: blur(14.588665962219238px);
+    overflow-y: auto;
+}
+
+.currentRanking{
+    position: absolute;
+    top: 0;
+    width: 95vw;
+    height: 12vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 11.671px;
+    background: linear-gradient(111deg, rgba(239, 238, 238, 0.32) 2.82%, rgba(239, 238, 238, 0.06) 90.94%);
+    backdrop-filter: blur(1.4588665962219238px);
+}
+
+.header{
+    width: 95vw;
+    position: relative;
+}
+
+.xButton{
+    width: 20px;
+    height: 20px;
+    position:absolute;
+    right:15px;
+    top:calc(17.5% - 25px);
+}
+
+.remainingTime{
+    margin: 20px;
+    font-size: 20px;
+    font-weight: 400;
+    span {
+        font-weight: 900;
+    }
+}

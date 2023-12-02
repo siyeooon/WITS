@@ -1,0 +1,61 @@
+@import '../../styles/common';
+
+.container{
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #29252E;
+    color:white;
+}
+
+.questionContainer{
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    height: 40vh;
+    align-items: center;
+    justify-content: center;
+}
+.questionBox{
+    width: 60vw;
+    height: 60vw;   
+    text-align: center;
+    line-height: 60vw;
+    color:rgba(103, 0, 255, 1);
+
+    font-family: Inter;
+    font-size: 83.844px;
+    font-style: normal;
+    font-weight: 600;
+
+    border-radius: 14.847px;    
+    background: #4A4848;
+    
+    margin: 20px;
+}
+
+.button{
+    width: 160px;
+    margin: 10px;
+    height: 50px;
+    border: 2px solid;
+    border-radius: 25px;
+    border-color: rgba(103, 0, 255, 1);
+}
+
+.selectedButton{
+    border-color:white;
+}
+
+.answerButton{
+    background-color: rgba(103, 0, 255, 1);;
+}
+.buttonContainer{
+    display: flex;
+    width: 100vw;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 80px;
+    justify-content: center;
+}
