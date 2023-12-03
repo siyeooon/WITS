@@ -1,6 +1,6 @@
 import { TypedEmitter } from "tiny-typed-emitter";
 
-interface UserEmitEvents {
+export interface UserEmitEvents {
   connected: (userId: number) => void;
   disconnected: (userId: number) => void;
 
@@ -10,7 +10,7 @@ interface UserEmitEvents {
 
 export const userEventEmitter = new TypedEmitter<UserEmitEvents>();
 
-interface ServerEmitEvents {
+export interface ServerEmitEvents {
   userConnected: (userId: number) => void;
   userDisconnected: (userId: number) => void;
 

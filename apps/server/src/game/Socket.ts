@@ -38,6 +38,7 @@ export default (
           break;
       }
     };
+
     ws.onclose = () => {
       const index = connections.indexOf(ws);
       if (index !== -1) {

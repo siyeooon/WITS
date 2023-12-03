@@ -3,12 +3,13 @@ import http, { createServer } from "http";
 import WebSocket from "ws";
 import applySocket from "./game/Socket";
 import cookie from "cookie";
+import { gameLoop } from "./game/Game";
 
 const app: Express = express();
 const server = createServer(app);
 export const wss = new WebSocket.Server({ server });
 
-const port = process.env.PORT;
+const port = 3000;
 
 app.get("/oauth/google/callback", (req: Request, res: Response) => {
   res.json("/oauth/google");
@@ -45,4 +46,4 @@ server.on("upgrade", (request, socket, head) => {
 });
 
 applySocket(wss);
-// startGame();
+gameLoop();
