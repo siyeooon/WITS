@@ -68,6 +68,9 @@ async function selectThemeStage() {
     availableThemses: availableThemesData,
     selectedThemeIndex: undefined,
   };
+  console.log("============ available themes ============");
+  console.log(availableThemesData);
+  console.log("==========================================");
 
   /************************************************************
    *  테마 투표 시작
@@ -137,6 +140,10 @@ async function playStage(selectedThemeInfo: { id: number; name: string }) {
     )
     .where(eq(schema.songsToThemes.themeId, selectedThemeInfo.id));
 
+  console.log("============ selectedThemeSongs ============");
+  console.log(selectedThemeSongs);
+  console.log("==========================================");
+
   const roundCounts = Math.min(MAX_ROUND, selectedThemeSongs.length);
   /**
    * 라운드 진행
@@ -172,25 +179,6 @@ async function playStage(selectedThemeInfo: { id: number; name: string }) {
     // 5초 이후 클라이언트에서 게임 진행
     const roundWillStartAt = Date.now() + ROUND_PREPARE_TIME;
     const roundEndAt = roundWillStartAt + ROUND_DURATION;
-
-    const roundInfoData = JSON.stringify({
-      type: "roundInfo",
-      data: {
-        roundNo: roundNo,
-        roundInfo: {
-          song: {
-            albumUrl: correctAnswer.songs.albumUrl,
-            previewUrl: correctAnswer.songs.previewUrl,
-          },
-          answerList: answerList.map((answer) => answer.songs.title),
-        },
-        startAt: roundWillStartAt,
-      },
-    });
-
-    connections.forEach((connection) => {
-      connection.send(roundInfoData);
-    });
 
     const onReceiveAnswer = (userId: number, answerIndex: number) => {
       const receivedAt = Date.now();
@@ -248,6 +236,8 @@ export async function gameLoop() {
 
   console.log("--selectThemeStage start");
   const selectedThemeInfo = await selectThemeStage();
+  console.log("============ selected theme ============");
+  console.log(selectedThemeInfo);
   console.log("--selectThemeStage end");
 
   console.log("--playStage start");
