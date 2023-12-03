@@ -2,7 +2,7 @@ import WebSocket from "ws";
 import { shuffleArray } from "../utils/shuffleArray";
 import { db, schema } from "../../database";
 import { eq, sql } from "drizzle-orm";
-import { wss } from "..";
+import { serverEventEmitter, userEventEmitter } from "./userEventEmitter";
 
 /**
  * 게임 상태를 나타내는 ENUM
@@ -18,132 +18,112 @@ const enum EGameStatus {
   IN_GAME,
   FINISHED,
 }
-type ESelectThemeStatus = {
-  status: EGameStatus.SELECT_THEME;
-  themeList: string[];
+
+let gameStatus = EGameStatus.SELECT_THEME;
+const connections: WebSocket[] = [];
+
+type TSelectThemeRoundData = {
+  gameStatus: EGameStatus.SELECT_THEME;
+  availableThemses: {
+    id: number;
+    name: string;
+    themeImageUrl: string;
+  }[];
   selectedThemeIndex: number | undefined;
 };
-let gameStatus = EGameStatus.SELECT_THEME;
-let gameTheme = null;
-let currentRound = 0;
-let currentRoundInfo = {};
-const connections: WebSocket[] = [];
-type TGameInfo = {
-  gameStatus: EGameStatus;
-  playerCount: number;
-  gameTheme: null | any;
-  prevRound: any[]; // 이전 라운드 기록
-  currentRound: any; // 현재 진행 라운드 정보
-};
-const getGameInfo = (): TGameInfo => {
-  const commonGameResponse: TGameInfo = {
-    gameStatus: gameStatus,
-    playerCount: connections.length,
-    gameTheme: {},
-    prevRound: [
-      {
-        roundNo: 1,
-        roundInfo: {
-          song: {
-            albumUrl: "",
-            previewUrl: "",
-          },
-        },
-      },
-      {
-        roundNo: 2,
-        roundInfo: {
-          song: {
-            albumUrl: "",
-            previewUrl: "",
-          },
-        },
-      },
-    ],
-    currentRound: {
-      roundNo: 3,
-      roundInfo: {
-        song: {
-          albumUrl: "",
-          previewUrl: "",
-        },
-      },
-    },
-  };
 
-  return commonGameResponse;
+type TPlayGameData = {
+  gameStatus: EGameStatus.IN_GAME;
+  currentRound: number;
+  maxRound: number;
 };
-const onUserConnected = (ws: WebSocket) => {
-  connections.push(ws);
-};
-wss.on("connection", onUserConnected);
-/**
- * 현재 접속한 유저 수 전송
- */
-const broadcastUserStatus = () => {
-  const totalConnectedUserCount = connections.length;
 
-  connections.forEach((connection) => {
-    connection.send(
-      JSON.stringify({
-        type: "connectedUserCount",
-        data: totalConnectedUserCount,
-      })
-    );
-  });
+let gameInfo: TSelectThemeRoundData | TPlayGameData;
 
-  setTimeout(broadcastUserStatus, 2000);
-};
-const broadcastTimer = setTimeout(broadcastUserStatus, 5000);
 /**
  * 테마 선택 스테이지
  */
-
 async function selectThemeStage() {
   gameStatus = EGameStatus.SELECT_THEME;
 
+  // 테마 목록 추출
   const MAX_SELECT_THEME = 6;
 
-  const availableThemes = await db
+  const availableThemeRows = await db
     .select()
     .from(schema.themes)
     .orderBy(sql`RAND()`)
     .limit(MAX_SELECT_THEME);
 
-  // TODO: 랜덤 테마 선택 데이터 전송
-  connections.forEach((connection) => {
-    connection.send(JSON.stringify({}));
-  });
+  const availableThemesData = availableThemeRows.map((themeInfo) => ({
+    id: themeInfo.id,
+    name: themeInfo.name,
+    themeImageUrl: "",
+  }));
+  const availableThemeCounts = availableThemeRows.length;
 
-  // 10초간 사용자로부터 테마 수집
-  const playerScore = new Map<string, number>();
+  serverEventEmitter.emit("voteThemeStarted", availableThemesData);
+  gameInfo = {
+    gameStatus: EGameStatus.SELECT_THEME,
+    availableThemses: availableThemesData,
+    selectedThemeIndex: undefined,
+  };
 
-  // TODO: 테마 선택 이벤트 수신 시작
+  /************************************************************
+   *  테마 투표 시작
+   ************************************************************/
+  const themeVoteMap = new Map<number, number>();
+
+  const onUserVoteTheme = (userId: number, selectedThemeIndex: number) => {
+    if (selectedThemeIndex < 0 || selectedThemeIndex >= availableThemeCounts) {
+      return;
+    }
+
+    themeVoteMap.set(userId, selectedThemeIndex);
+  };
+  userEventEmitter.on("voteTheme", onUserVoteTheme);
+
   await new Promise((resolve) => setTimeout(resolve, 10000));
 
-  // TODO: 테마 선택 이벤트 수신 종료
-  const themeSelectResultIndex = Math.floor(
-    Math.random() * availableThemes.length
+  userEventEmitter.off("voteTheme", onUserVoteTheme);
+
+  /************************************************************
+   *  테마 투표 종료
+   ************************************************************/
+
+  // 테마 결과 산정
+  const voteCounts = new Array(availableThemeCounts).fill(0);
+  for (const themeIndex of themeVoteMap.values()) {
+    voteCounts[themeIndex] += 1;
+  }
+
+  const highestVoteCount = Math.max(...voteCounts);
+
+  const heighestVotedThemes = voteCounts.filter(
+    (voteCount) => voteCount === highestVoteCount
   );
 
-  const selectedThemeId = 1;
+  const selectedThemeIndex =
+    heighestVotedThemes[Math.floor(Math.random() * heighestVotedThemes.length)];
 
-  return selectedThemeId;
+  serverEventEmitter.emit("voteThemeEnded", selectedThemeIndex);
+  gameInfo.selectedThemeIndex = selectedThemeIndex;
+
+  const selectedTheme = availableThemeRows[selectedThemeIndex];
+
+  return selectedTheme;
 }
+
 /**
  * 플레이 스테이지
  */
-
-async function playStage(selectedThemeId: number) {
-  gameStatus = EGameStatus.IN_GAME;
-
+async function playStage(selectedThemeInfo: { id: number; name: string }) {
   /**
    * 상수
    */
   const MAX_ROUND = 10;
-
-  const roundPrepareTime = 1000 * 5;
-  const roundDuration = 1000 * 10;
+  const ROUND_PREPARE_TIME = 1000 * 5;
+  const ROUND_DURATION = 1000 * 10;
 
   /**
    * 라운드 준비
@@ -155,13 +135,13 @@ async function playStage(selectedThemeId: number) {
       schema.songsToThemes,
       eq(schema.songs.id, schema.songsToThemes.songId)
     )
-    .where(eq(schema.songsToThemes.themeId, selectedThemeId));
+    .where(eq(schema.songsToThemes.themeId, selectedThemeInfo.id));
 
   const roundCounts = Math.min(MAX_ROUND, selectedThemeSongs.length);
   /**
    * 라운드 진행
    */
-  const playerScore = new Map<string, number>();
+  const playerScore = new Map<number, number>();
 
   for (let i = 0; i < roundCounts; i++) {
     const roundNo = i + 1;
@@ -180,7 +160,7 @@ async function playStage(selectedThemeId: number) {
     );
 
     const userResponseMap = new Map<
-      string,
+      number,
       {
         answerIndex: number;
         responseTime: number;
@@ -190,8 +170,8 @@ async function playStage(selectedThemeId: number) {
     // TODO: 라운드 준비 데이터 전송 (게임 정보 및 시간)
     // 노래 및 앨범커버를 이 시간 (5초) 동안 prefetch 진행
     // 5초 이후 클라이언트에서 게임 진행
-    const roundWillStartAt = Date.now() + roundPrepareTime;
-    const roundEndAt = roundWillStartAt + roundDuration;
+    const roundWillStartAt = Date.now() + ROUND_PREPARE_TIME;
+    const roundEndAt = roundWillStartAt + ROUND_DURATION;
 
     const roundInfoData = JSON.stringify({
       type: "roundInfo",
@@ -212,7 +192,7 @@ async function playStage(selectedThemeId: number) {
       connection.send(roundInfoData);
     });
 
-    const onReceiveAnswer = (userId: string, answerIndex: number) => {
+    const onReceiveAnswer = (userId: number, answerIndex: number) => {
       const receivedAt = Date.now();
 
       // 게임 시작 내 응답이 아니라면 무시
@@ -232,6 +212,8 @@ async function playStage(selectedThemeId: number) {
         responseTime: diff,
       });
     };
+
+    userEventEmitter.on("selectAnswer", onReceiveAnswer);
 
     // 이벤트 수신 종료 대기
     await new Promise((resolve) =>
@@ -262,6 +244,6 @@ async function playStage(selectedThemeId: number) {
 }
 
 async function gameLoop() {
-  const selectedThemeId = await selectThemeStage();
-  const gameResult = await playStage(selectedThemeId);
+  const selectedThemeInfo = await selectThemeStage();
+  const gameResult = await playStage(selectedThemeInfo);
 }

@@ -8,7 +8,7 @@ import { songs } from "./songs";
 
 export const themes = mysqlTable("themes", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  name: varchar("name", { length: 256 }),
+  name: varchar("name", { length: 256 }).notNull(),
 });
 
 export const songsToThemes = mysqlTable("songs_to_themes", {

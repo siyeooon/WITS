@@ -1,65 +1,49 @@
 import WebSocket from "ws";
-import http from "http";
-import events from "events";
-
-interface UserEmitEvents {
-  connection: (userId: string) => void;
-  selectTheme: (userId: string, selectedThemeIndex: number) => void;
-  selectAnswer: (userId: string, selectedAnswerIndex: number) => void;
-}
-
-declare interface UserEventEmitter {
-  on<U extends keyof UserEmitEvents>(
-    event: U,
-    listener: UserEmitEvents[U]
-  ): this;
-
-  emit<U extends keyof UserEmitEvents>(
-    event: U,
-    ...args: Parameters<UserEmitEvents[U]>
-  ): boolean;
-}
-
-class UserEventEmitter extends events.EventEmitter {
-  constructor() {
-    super();
-  }
-}
-
-const userEventEmitter = new UserEventEmitter();
+import http from "node:http";
+import { userEventEmitter } from "./userEventEmitter";
 
 export default (
   wss: WebSocket.Server<typeof WebSocket, typeof http.IncomingMessage>
 ) => {
   const connections: WebSocket[] = [];
 
-  const onUserConnected = (ws: WebSocket) => {
+  const onUserConnected = (
+    ws: WebSocket,
+    req: http.IncomingMessage<unknown>
+  ) => {
     connections.push(ws);
+
+    const reqSession = req.session!;
+
+    console.log(reqSession);
+
+    const userId = reqSession.userId;
+
+    userEventEmitter.emit("connected", userId);
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data.toString());
 
       switch (data.type) {
-        case "connection":
-          userEventEmitter.emit("connection", data.userId);
-          break;
-
-        case "selectTheme":
-          userEventEmitter.emit(
-            "selectTheme",
-            data.userId,
-            data.selectedThemeIndex
-          );
+        case "voteTheme":
+          userEventEmitter.emit("voteTheme", userId, data.selectedThemeIndex);
           break;
 
         case "selectAnswer":
           userEventEmitter.emit(
             "selectAnswer",
-            data.userId,
+            userId,
             data.selectedAnswerIndex
           );
           break;
       }
+    };
+    ws.onclose = () => {
+      const index = connections.indexOf(ws);
+      if (index !== -1) {
+        connections.splice(index, 1);
+      }
+      userEventEmitter.emit("disconnected", userId);
     };
   };
 
