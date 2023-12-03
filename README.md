@@ -8,6 +8,11 @@
 npm install -g pnpm
 ```
 
+종속성 설치
+```
+pnpm install -r
+```
+
 ## Recommend
 
 - VSCode
