@@ -3,8 +3,6 @@ import { SceneController } from "./ingame/page";
 
 export default function Game() {
   return (
-    <AnimatePresence>
         <SceneController />
-     </AnimatePresence>
   );
 }

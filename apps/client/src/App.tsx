@@ -10,9 +10,9 @@ function App() {
     <GoogleOAuthProvider clientId="221792790210-kvsrq8ti2al24c0g8oh2e9oldv71f64j.apps.googleusercontent.com">
     <LoginProvider>  
       <Routes>
-        <Route path="/" Component={router.home}/>
-        <Route path="/ingame" Component={router.game}/>
-        <Route path="/ranking" Component={router.totalRanking}/>
+        <Route path="/" Component={router.home} />
+        <Route path="/ingame" Component={router.game} />
+        <Route path="/ranking" Component={router.totalRanking} />
       </Routes>
       </LoginProvider>
       </GoogleOAuthProvider>
