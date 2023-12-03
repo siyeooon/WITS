@@ -2,7 +2,9 @@ import React, {useState, useEffect} from 'react'
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
 import albumFiesta from "/Fiesta.jpg";
-
+import styles from './styles.module.scss'
+import { CurrentRanking } from '../currentRanking';
+import { Header } from '../header';
 const AnswerButton: React.FC<{
   isDisabled: boolean;
   isSelected?: boolean;
@@ -12,13 +14,7 @@ const AnswerButton: React.FC<{
 }> = ({ isSelected, isAnswer, text, onClick }) => {
   return (
     <button
-      className={cn(
-        "bg-gray-300 h-20 rounded-2xl font-bold text-lg transition-colors",
-        {
-          "ring-8 ring-purple-500": isSelected,
-          "bg-green-500 text-white": isAnswer,
-        }
-      )}
+      className={`${styles.button} ${isSelected ? styles.selectedButton : ''} ${isAnswer ? styles.answerButton : ''}`}
       onClick={onClick}
     >
       {text}
@@ -48,7 +44,7 @@ export const AnswerContainer: React.FC = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className={styles.buttonContainer}>
       {answerList.map((answer, index) => (
         <AnswerButton
           text={answer}
@@ -80,53 +76,47 @@ export const AnswerCard: React.FC = () => {
 };
 
 export const InRoundScene = () => {
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(true);
+  const [showAnswer, setShowAnswer] = useState<boolean>(false);
   return (
-    <motion.div
-      className="w-screen h-[100dvh]"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <div className="h-16 bg-slate-500">
-        <span className="font-bold text-3xl text-white">WITS</span>
-      </div>
-      <div className="container h-[calc(100%-4rem)] flex flex-col p-4 gap-4">
-        <div className="flex flex-row gap-2">
-          <div className="relative inline-flex flex-col items-center">
-            <div className="flex h-12 w-12 rounded-full bg-gray-500" />
-            <div className="leading-none">43,815</div>
+    <>
+        <motion.div
+        className={styles.container}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        exit={{ opacity: 0 }}
+      >
+          <Header/>
+          <div className={styles.questionContainer}>
+            <div className="font-bold" style={{fontSize:20}}>다음 노래의 제목은 무엇일까요?</div>
+            {showAnswer?
+            <AnswerCard />:           
+            <div className={styles.questionBox}>
+            ?
           </div>
-          <div className="inline-flex flex-col items-center">
-            <div className="flex h-12 w-12 rounded-full bg-gray-500" />
-            <div className="leading-none">28,315</div>
+            }
+            </div>
+          <div>
+            <img 
+                  src='/src/assets/ingame/volumeUp.png'
+                  style={{width:30, height: 30, margin: 20}}
+            />
+            <motion.div
+              className="origin-left"
+              style={{backgroundColor: '#6804FD', height: 10, width:'100%', margin:'20px 0', borderRadius: 50}}
+              initial={{
+                scaleX: 1,
+              }}
+              animate={{
+                scaleX: 0,
+              }}
+              transition={{ duration: 10, ease: "linear" }}
+            />
           </div>
-          <div className="inline-flex flex-col items-center">
-            <div className="flex h-12 w-12 rounded-full bg-gray-500" />
-            <div className="leading-none">13,515</div>
-          </div>
-        </div>
-
-        <div className="flex-1 flex flex-col">
-          <div className="font-bold">다음 노래의 제목은 무엇일까요?</div>
-          <div className="flex-1">
-            <AnswerCard />
-          </div>
-        </div>
-        <div>
-          <motion.div
-            className="inset-x-0 bg-red-500 h-4 origin-left"
-            initial={{
-              scaleX: 1,
-            }}
-            animate={{
-              scaleX: 0,
-            }}
-            transition={{ duration: 10, ease: "linear" }}
-          />
-        </div>
-        <AnswerContainer />
-      </div>
-    </motion.div>
+          <AnswerContainer />
+      </motion.div>
+      <CurrentRanking modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen}/>
+    </>
   );
 };
