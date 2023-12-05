@@ -1,27 +1,27 @@
 @import '../../styles/common';
 
 .container{
-    width: 100vw;
+    width: 100dvw;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100dvh;
     background-color: #29252E;
     color:white;
 }
 
 .questionContainer{
-    width: 100vw;
+    width: 100dvw;
     display: flex;
     flex-direction: column;
-    height: 40vh;
+    height: 40dvh;
     align-items: center;
     justify-content: center;
 }
 .questionBox{
-    width: 60vw;
-    height: 60vw;   
+    width: 60dvw;
+    height: 60dvw;   
     text-align: center;
-    line-height: 60vw;
+    line-height: 60dvw;
     color:rgba(103, 0, 255, 1);
 
     font-family: Inter;
@@ -53,7 +53,7 @@
 }
 .buttonContainer{
     display: flex;
-    width: 100vw;
+    width: 100dvw;
     flex-wrap: wrap;
     align-items: center;
     margin-top: 80px;
