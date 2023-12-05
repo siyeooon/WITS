@@ -8,7 +8,6 @@ const LoginProvider: React.FC<React.PropsWithChildren> = ({children})=>{
     // );
 
     const value = false;
-
     return <LoginContext.Provider value={value}>{children}</LoginContext.Provider>
 }
 export default LoginProvider;

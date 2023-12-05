@@ -1,7 +1,7 @@
 @import '../../styles/common';
 .container{
-    width: 100vw;
-    height: 100vh;
+    width: 100dvw;
+    height: 100dvh;
     position: absolute;
     left: 0;
     top: 0;
@@ -26,8 +26,8 @@
 .currentRanking{
     position: absolute;
     top: 0;
-    width: 95vw;
-    height: 12vh;
+    width: 95dvw;
+    height: 12dvh;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -37,7 +37,7 @@
 }
 
 .header{
-    width: 95vw;
+    width: 95dvw;
     position: relative;
 }
 

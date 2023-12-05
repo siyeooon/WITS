@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import viteLogo from "/vite.svg";
 import { cn } from "../../lib/utils";
 import { motion } from "framer-motion";
