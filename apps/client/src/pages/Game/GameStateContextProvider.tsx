@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { TGameData, GameStateContext } from "./TGameData";
+import { GameStateContext } from "./TGameData";
+import type { TGameState } from "@wits/types";
 
 export function GameStateContextProvider({
   children,
@@ -7,7 +8,7 @@ export function GameStateContextProvider({
   children: React.ReactNode;
 }) {
   const [isConnected, setIsConnected] = useState(false);
-  const [gameData, setGameData] = useState<TGameData | null>(null);
+  const [gameData, setGameData] = useState<TGameState | null>(null);
 
   const ws = useRef<WebSocket | null>(null);
 
@@ -18,7 +19,12 @@ export function GameStateContextProvider({
     socket.onclose = () => setIsConnected(false);
     socket.onmessage = (event) => {
       console.log(event.data);
-      setGameData(JSON.parse(event.data));
+
+      const data = JSON.parse(event.data);
+
+      if (data.type === "stateUpdated") {
+        setGameData(data.state);
+      }
     };
 
     ws.current = socket;

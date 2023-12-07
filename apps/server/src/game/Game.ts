@@ -1,8 +1,8 @@
-import WebSocket from "ws";
 import { shuffleArray } from "../utils/shuffleArray";
 import { db, schema } from "../../database";
 import { eq, sql } from "drizzle-orm";
 import { serverEventEmitter, userEventEmitter } from "./userEventEmitter";
+import { EGameStatus, TGameState, TPlayGameData } from "@wits/types";
 
 /**
  * 게임 상태를 나타내는 ENUM
@@ -13,50 +13,12 @@ import { serverEventEmitter, userEventEmitter } from "./userEventEmitter";
  * FINISHED: 게임 결과 표시
  */
 
-const enum EGameStatus {
-  SELECT_THEME,
-  IN_GAME,
-  FINISHED,
-}
-
-let gameStatus = EGameStatus.SELECT_THEME;
-const connections: WebSocket[] = [];
-
-type TSelectThemeRoundData = {
-  gameStatus: EGameStatus.SELECT_THEME;
-  availableThemses: {
-    id: number;
-    name: string;
-    themeImageUrl: string;
-  }[];
-  selectedThemeIndex: number | undefined;
-};
-
-type TPlayGameData = {
-  gameStatus: EGameStatus.IN_GAME;
-
-  currentRoundInfo: {
-    roundNo: number;
-    questionType: "songName" | "artistName";
-    songName?: string;
-    artistName?: string;
-    albumImageUrl: string;
-    previewMusicUrl: string;
-    startAt: number;
-    endAt: number;
-  };
-
-  maxRound: number;
-};
-
-let gameInfo: TSelectThemeRoundData | TPlayGameData;
+let gameInfo: TGameState;
 
 /**
  * 테마 선택 스테이지
  */
 async function selectThemeStage() {
-  gameStatus = EGameStatus.SELECT_THEME;
-
   // 테마 목록 추출
   const MAX_SELECT_THEME = 6;
 
@@ -73,15 +35,12 @@ async function selectThemeStage() {
   }));
   const availableThemeCounts = availableThemeRows.length;
 
-  serverEventEmitter.emit("voteThemeStarted", availableThemesData);
   gameInfo = {
     gameStatus: EGameStatus.SELECT_THEME,
     availableThemses: availableThemesData,
     selectedThemeIndex: undefined,
   };
-  console.log("============ available themes ============");
-  console.log(availableThemesData);
-  console.log("==========================================");
+  serverEventEmitter.emit("stateUpdated", gameInfo);
 
   /************************************************************
    *  테마 투표 시작
@@ -120,10 +79,12 @@ async function selectThemeStage() {
   const selectedThemeIndex =
     heighestVotedThemes[Math.floor(Math.random() * heighestVotedThemes.length)];
 
-  serverEventEmitter.emit("voteThemeEnded", selectedThemeIndex);
   gameInfo.selectedThemeIndex = selectedThemeIndex;
+  serverEventEmitter.emit("stateUpdated", gameInfo);
 
   const selectedTheme = availableThemeRows[selectedThemeIndex];
+
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   return selectedTheme;
 }
@@ -138,23 +99,6 @@ async function playStage(selectedThemeInfo: { id: number; name: string }) {
   const MAX_ROUND = 10;
   const ROUND_PREPARE_TIME = 1000 * 5;
   const ROUND_DURATION = 1000 * 10;
-
-  const stageInfo: TPlayGameData = {
-    gameStatus: EGameStatus.IN_GAME,
-
-    currentRoundInfo: {
-      roundNo: 0,
-      questionType: "songName",
-      songName: "",
-      artistName: "",
-      albumImageUrl: "",
-      previewMusicUrl: "",
-      startAt: 0,
-      endAt: 0,
-    },
-
-    maxRound: MAX_ROUND,
-  };
 
   /**
    * 라운드 준비
@@ -179,13 +123,10 @@ async function playStage(selectedThemeInfo: { id: number; name: string }) {
   const playerScore = new Map<number, number>();
 
   for (let i = 0; i < roundCounts; i++) {
-    const roundNo = i + 1;
-
     shuffleArray(selectedThemeSongs);
     // 1. 문제 선정 (제목 or 가수)
     // 2. 답변 목록 선정 (정답 외 3개, 총 4개)
     const correctAnswer = selectedThemeSongs.shift()!;
-
 
     const answerList = [correctAnswer, ...selectedThemeSongs.slice(0, 3)];
 
@@ -209,10 +150,25 @@ async function playStage(selectedThemeInfo: { id: number; name: string }) {
     const roundWillStartAt = Date.now() + ROUND_PREPARE_TIME;
     const roundEndAt = roundWillStartAt + ROUND_DURATION;
 
-    stageInfo.currentRoundInfo = {
-      albumImageUrl: correctAnswer.songs.albumUrl,
-      
-    }
+    const stageInfo: TPlayGameData = {
+      gameStatus: EGameStatus.IN_GAME,
+
+      currentRoundInfo: {
+        roundNo: 0,
+        questionType: "songName",
+        songName: "",
+        artistName: "",
+        albumImageUrl: "",
+        previewMusicUrl: "",
+        startAt: roundWillStartAt,
+        endAt: roundEndAt,
+      },
+
+      maxRound: roundCounts,
+    };
+
+    serverEventEmitter.emit("stateUpdated", stageInfo);
+
     const onReceiveAnswer = (userId: number, answerIndex: number) => {
       const receivedAt = Date.now();
 

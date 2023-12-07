@@ -14,19 +14,7 @@ export interface ServerEmitEvents {
   userConnected: (userId: number) => void;
   userDisconnected: (userId: number) => void;
 
-  voteThemeStarted: (
-    themeInfos: {
-      id: number;
-      name: string;
-      themeImageUrl: string;
-    }[]
-  ) => void;
-
-  userThemeVoted: (themeId: number) => void;
-  voteThemeEnded: (themeId: number) => void;
-
-  answerSelected: (userId: number, answerId: number) => void;
-  answer: (answerId: number) => void;
+  stateUpdated: (state: any) => void;
 }
 
 export const serverEventEmitter = new TypedEmitter<ServerEmitEvents>();

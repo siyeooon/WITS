@@ -2,7 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import { createContext, useEffect, useMemo, useState } from "react";
 import SelectThemeScene from "../../../components/scenes/SelectThemeScene";
 import { InRoundScene } from "../../../components/scenes/InRoundScene";
-import { EGameStatus } from "../TGameData";
+import { EGameStatus } from "@wits/types";
 import { useGameState } from "../useGameState";
 
 export const SceneController = () => {

@@ -1,6 +1,9 @@
 import WebSocket from "ws";
 import http from "node:http";
 import { serverEventEmitter, userEventEmitter } from "./userEventEmitter";
+import { TGameState } from "@wits/types";
+
+let lastSentState: TGameState | undefined = undefined;
 
 export default (
   wss: WebSocket.Server<typeof WebSocket, typeof http.IncomingMessage>
@@ -53,27 +56,22 @@ export default (
       }
       userEventEmitter.emit("disconnected", userId);
     };
+
+    if (lastSentState !== undefined) {
+      ws.send(JSON.stringify({ type: "stateUpdated", state: lastSentState }));
+    }
   };
 
   wss.on("connection", onUserConnected);
 
-  serverEventEmitter.on("voteThemeStarted", (themeInfos) => {
-    for (const ws of connections) {
-      ws.send(
-        JSON.stringify({
-          type: "voteThemeStarted",
-          themeInfos,
-        })
-      );
-    }
-  });
+  serverEventEmitter.on("stateUpdated", (state) => {
+    lastSentState = state;
 
-  serverEventEmitter.on("voteThemeEnded", (themeInfos) => {
     for (const ws of connections) {
       ws.send(
         JSON.stringify({
-          type: "voteThemeStarted",
-          themeInfos,
+          type: "stateUpdated",
+          state,
         })
       );
     }

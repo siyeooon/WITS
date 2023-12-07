@@ -1,61 +1,58 @@
-@import '../../styles/common';
+@import "../../styles/common";
 
-.container{
-    width: 100dvw;
-    display: flex;
-    flex-direction: column;
-    height: 100dvh;
-    background-color: #29252E;
-    color:white;
+.container {
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: #29252e;
+  color: white;
 }
 
-.questionContainer{
-    width: 100dvw;
-    display: flex;
-    flex-direction: column;
-    height: 40dvh;
-    align-items: center;
-    justify-content: center;
-}
-.questionBox{
-    width: 60dvw;
-    height: 60dvw;   
-    text-align: center;
-    line-height: 60dvw;
-    color:rgba(103, 0, 255, 1);
-
-    font-family: Inter;
-    font-size: 83.844px;
-    font-style: normal;
-    font-weight: 600;
-
-    border-radius: 14.847px;    
-    background: #4A4848;
-    
-    margin: 20px;
+.questionContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.button{
-    width: 160px;
-    margin: 10px;
-    height: 50px;
-    border: 2px solid;
-    border-radius: 25px;
-    border-color: rgba(103, 0, 255, 1);
+.questionBox {
+  flex: 1;
+  aspect-ratio: 1/1;
+  text-align: center;
+  color: rgba(103, 0, 255, 1);
+
+  font-family: Inter;
+  font-size: 83.844px;
+  font-style: normal;
+  font-weight: 600;
+
+  border-radius: 14.847px;
+  background: #4a4848;
+
+  margin: 20px;
 }
 
-.selectedButton{
-    border-color:white;
+.button {
+  width: 160px;
+  margin: 10px;
+  height: 50px;
+  border: 2px solid;
+  border-radius: 25px;
+  border-color: rgba(103, 0, 255, 1);
 }
 
-.answerButton{
-    background-color: rgba(103, 0, 255, 1);;
+.selectedButton {
+  border-color: white;
 }
-.buttonContainer{
-    display: flex;
-    width: 100dvw;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-top: 80px;
-    justify-content: center;
+
+.answerButton {
+  background-color: rgba(103, 0, 255, 1);
+}
+.buttonContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }

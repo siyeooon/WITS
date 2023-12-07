@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import viteLogo from "/vite.svg";
 import { cn } from "../../lib/utils";
 import { motion } from "framer-motion";
-import { TSelectThemeRoundData } from "../../pages/Game/TGameData";
+import { TSelectThemeRoundData } from "@wits/types";
 
 const Avatar: React.FC<{ text: string }> = ({ text }) => {
   return (
@@ -29,8 +29,9 @@ const ThemeSelectCard: React.FC<
   React.HTMLAttributes<HTMLDivElement> & {
     isSelected: boolean;
     isResult?: boolean;
+    name: string;
   }
-> = ({ isSelected, isResult, ...attr }) => {
+> = ({ name, isSelected, isResult, ...attr }) => {
   return (
     <div
       className={cn("relative rounded-3xl flex flex-col p-2 select-none", {
@@ -43,7 +44,7 @@ const ThemeSelectCard: React.FC<
         src={viteLogo}
         className="flex-1 aspect-square rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none"
       />
-      <div className="font-bold text-lg text-center">2020</div>
+      <div className="font-bold text-lg text-center">{name}</div>
 
       <div className="absolute right-0 top-0 flex flex-row -space-x-2 ">
         <AvatarHolder
@@ -57,7 +58,7 @@ const ThemeSelectCard: React.FC<
 const SelectThemeScene: React.FC<{ gameData: TSelectThemeRoundData }> = ({
   gameData,
 }) => {
-  const [selectedId, setSelectedId] = useState<number>();
+  const [selectedIndex, setSelectedIndex] = useState<number>();
 
   return (
     <motion.div
@@ -65,22 +66,21 @@ const SelectThemeScene: React.FC<{ gameData: TSelectThemeRoundData }> = ({
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
       exit={{ opacity: 0 }}
+      className="bg-white"
     >
       <div className="text-xl font-bold">다음 게임의 테마를 정해주세요!</div>
       <div className="w-full grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2">
-        {new Array(6)
-          .fill(0)
-          .map((_, index) => index)
-          .map((i) => (
-            <ThemeSelectCard
-              key={i}
-              isSelected={i === selectedId}
-              isResult={i === gameData.selectedThemeIndex}
-              onClick={() => {
-                setSelectedId(i);
-              }}
-            />
-          ))}
+        {gameData.availableThemses.map((themeInfo, i) => (
+          <ThemeSelectCard
+            key={themeInfo.id}
+            name={themeInfo.name}
+            isSelected={i === selectedIndex}
+            isResult={i === gameData.selectedThemeIndex}
+            onClick={() => {
+              setSelectedIndex(i);
+            }}
+          />
+        ))}
       </div>
     </motion.div>
   );
