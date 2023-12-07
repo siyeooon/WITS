@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 import http from "node:http";
-import { userEventEmitter } from "./userEventEmitter";
+import { serverEventEmitter, userEventEmitter } from "./userEventEmitter";
 
 export default (
   wss: WebSocket.Server<typeof WebSocket, typeof http.IncomingMessage>
@@ -11,6 +11,12 @@ export default (
     ws: WebSocket,
     req: http.IncomingMessage<unknown>
   ) => {
+    req.session = {
+      userId: Math.floor(Math.random() * 1000000),
+    };
+
+    console.log("request.session: ", req.session);
+
     connections.push(ws);
 
     const reqSession = req.session!;
@@ -40,6 +46,7 @@ export default (
     };
 
     ws.onclose = () => {
+      console.log("exit ", req.session);
       const index = connections.indexOf(ws);
       if (index !== -1) {
         connections.splice(index, 1);
@@ -49,4 +56,26 @@ export default (
   };
 
   wss.on("connection", onUserConnected);
+
+  serverEventEmitter.on("voteThemeStarted", (themeInfos) => {
+    for (const ws of connections) {
+      ws.send(
+        JSON.stringify({
+          type: "voteThemeStarted",
+          themeInfos,
+        })
+      );
+    }
+  });
+
+  serverEventEmitter.on("voteThemeEnded", (themeInfos) => {
+    for (const ws of connections) {
+      ws.send(
+        JSON.stringify({
+          type: "voteThemeStarted",
+          themeInfos,
+        })
+      );
+    }
+  });
 };

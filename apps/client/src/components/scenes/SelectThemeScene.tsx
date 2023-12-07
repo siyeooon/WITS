@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import viteLogo from "/vite.svg";
 import { cn } from "../../lib/utils";
 import { motion } from "framer-motion";
+import { TSelectThemeRoundData } from "../../pages/Game/TGameData";
 
 const Avatar: React.FC<{ text: string }> = ({ text }) => {
   return (
@@ -53,8 +54,8 @@ const ThemeSelectCard: React.FC<
   );
 };
 
-const SelectThemeScene: React.FC<{ themeResultIndex: number | undefined }> = ({
-  themeResultIndex,
+const SelectThemeScene: React.FC<{ gameData: TSelectThemeRoundData }> = ({
+  gameData,
 }) => {
   const [selectedId, setSelectedId] = useState<number>();
 
@@ -74,7 +75,7 @@ const SelectThemeScene: React.FC<{ themeResultIndex: number | undefined }> = ({
             <ThemeSelectCard
               key={i}
               isSelected={i === selectedId}
-              isResult={i === themeResultIndex}
+              isResult={i === gameData.selectedThemeIndex}
               onClick={() => {
                 setSelectedId(i);
               }}

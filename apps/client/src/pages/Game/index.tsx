@@ -1,8 +1,10 @@
-import { AnimatePresence } from "framer-motion";
 import { SceneController } from "./ingame/page";
+import { GameStateContextProvider } from "./GameStateContextProvider";
 
 export default function Game() {
   return (
-        <SceneController />
+    <GameStateContextProvider>
+      <SceneController />
+    </GameStateContextProvider>
   );
 }

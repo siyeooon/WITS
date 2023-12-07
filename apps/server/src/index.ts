@@ -23,27 +23,5 @@ app.get("/oauth/apple/callback", (req: Request, res: Response) => {
 server.listen(port, () => {
   console.log(`⚡️Server is running at http://localhost:${port}`);
 });
-
-server.on("upgrade", (request, socket, head) => {
-  console.log("to do auth ", request, socket, head);
-
-  const cookies = cookie.parse(request.headers.cookie || "");
-
-  const sessionId = cookies["connect.sid"];
-
-  if (!sessionId) {
-    socket.destroy();
-    return;
-  }
-
-  request.session = {
-    userId: Math.floor(Math.random() * 1000000),
-  };
-
-  wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit("connection", ws, request);
-  });
-});
-
 applySocket(wss);
 gameLoop();

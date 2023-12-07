@@ -1,40 +1,24 @@
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import SelectThemeScene from "../../../components/scenes/SelectThemeScene";
 import { InRoundScene } from "../../../components/scenes/InRoundScene";
-
-const enum EGameStatus {
-  SelectTheme,
-  InGame,
-  Result,
-}
-
-const enum ERoundStatus {
-  SelectAnswer,
-  Result,
-}
+import { EGameStatus } from "../TGameData";
+import { useGameState } from "../useGameState";
 
 export const SceneController = () => {
-  const [gameStatus, setGameStatus] = useState<EGameStatus>(
-    EGameStatus.SelectTheme
-  );
-
-  const [resultThemeIndex, setResultThemeIndex] = useState<number>();
-
-  useEffect(() => {
-    setTimeout(() => {
-      setResultThemeIndex(Math.floor(Math.random() * 4));
-      setGameStatus(EGameStatus.InGame);
-    }, 3000);
-  }, []);
+  const gameData = useGameState();
 
   const SceneComponent = useMemo(() => {
-    if (gameStatus === EGameStatus.SelectTheme) {
-      return <SelectThemeScene key={2} themeResultIndex={resultThemeIndex} />;
-    } else if (gameStatus === EGameStatus.InGame) {
-      return <InRoundScene key={1} />;
+    if (!gameData) {
+      return null;
     }
-  }, [gameStatus, resultThemeIndex]);
+
+    if (gameData.gameStatus === EGameStatus.SELECT_THEME) {
+      return <SelectThemeScene gameData={gameData} />;
+    } else if (gameData.gameStatus === EGameStatus.IN_GAME) {
+      return <InRoundScene />;
+    }
+  }, [gameData]);
 
   return <AnimatePresence mode="wait">{SceneComponent}</AnimatePresence>;
 };

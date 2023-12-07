@@ -34,7 +34,18 @@ type TSelectThemeRoundData = {
 
 type TPlayGameData = {
   gameStatus: EGameStatus.IN_GAME;
-  currentRound: number;
+
+  currentRoundInfo: {
+    roundNo: number;
+    questionType: "songName" | "artistName";
+    songName?: string;
+    artistName?: string;
+    albumImageUrl: string;
+    previewMusicUrl: string;
+    startAt: number;
+    endAt: number;
+  };
+
   maxRound: number;
 };
 
@@ -128,6 +139,23 @@ async function playStage(selectedThemeInfo: { id: number; name: string }) {
   const ROUND_PREPARE_TIME = 1000 * 5;
   const ROUND_DURATION = 1000 * 10;
 
+  const stageInfo: TPlayGameData = {
+    gameStatus: EGameStatus.IN_GAME,
+
+    currentRoundInfo: {
+      roundNo: 0,
+      questionType: "songName",
+      songName: "",
+      artistName: "",
+      albumImageUrl: "",
+      previewMusicUrl: "",
+      startAt: 0,
+      endAt: 0,
+    },
+
+    maxRound: MAX_ROUND,
+  };
+
   /**
    * 라운드 준비
    */
@@ -158,6 +186,7 @@ async function playStage(selectedThemeInfo: { id: number; name: string }) {
     // 2. 답변 목록 선정 (정답 외 3개, 총 4개)
     const correctAnswer = selectedThemeSongs.shift()!;
 
+
     const answerList = [correctAnswer, ...selectedThemeSongs.slice(0, 3)];
 
     shuffleArray(answerList);
@@ -180,6 +209,10 @@ async function playStage(selectedThemeInfo: { id: number; name: string }) {
     const roundWillStartAt = Date.now() + ROUND_PREPARE_TIME;
     const roundEndAt = roundWillStartAt + ROUND_DURATION;
 
+    stageInfo.currentRoundInfo = {
+      albumImageUrl: correctAnswer.songs.albumUrl,
+      
+    }
     const onReceiveAnswer = (userId: number, answerIndex: number) => {
       const receivedAt = Date.now();
 
