@@ -14,16 +14,18 @@ export type TSelectThemeRoundData = {
   selectedThemeIndex: number | undefined;
 };
 
+export type TQuestionType = "songName" | "artistName";
+
 export type TPlayGameData = {
   gameStatus: EGameStatus.IN_GAME;
 
   currentRoundInfo: {
     roundNo: number;
-    questionType: "songName" | "artistName";
-    songName?: string;
-    artistName?: string;
-    albumImageUrl: string;
-    previewMusicUrl: string;
+    questionType: TQuestionType;
+    title: string;
+    artist: string;
+    albumUrl: string;
+    previewUrl: string;
     startAt: number;
     endAt: number;
   };
