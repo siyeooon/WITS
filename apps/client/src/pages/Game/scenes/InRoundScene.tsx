@@ -6,57 +6,7 @@ import { CurrentRanking } from "../../../components/currentRanking";
 import { LuVolume2 } from "react-icons/lu";
 import { LuVolumeX } from "react-icons/lu";
 import { TPlayStageState } from "@wits/types";
-
-const dummyData = [
-  {
-    title: "Perfect Night",
-    artist: "LE SSERAFIM",
-    albumUrl:
-      "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/e6/df/10/e6df10ec-20e2-4fc8-51a1-cb923ce992c4/196922680779_Cover.jpg/512x512bb.jpg",
-    previewUrl:
-      "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/5a/11/a5/5a11a515-ac8a-b435-a4ba-63b10762a5c0/mzaf_8661977555640103244.plus.aac.ep.m4a",
-  },
-  {
-    title: "Drama",
-    artist: "aespa",
-    albumUrl:
-      "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/e6/df/10/e6df10ec-20e2-4fc8-51a1-cb923ce992c4/196922680779_Cover.jpg/512x512bb.jpg",
-    previewUrl:
-      "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/5a/11/a5/5a11a515-ac8a-b435-a4ba-63b10762a5c0/mzaf_8661977555640103244.plus.aac.ep.m4a",
-  },
-  {
-    title: "To. X",
-    artist: "TAEYEON",
-    albumUrl:
-      "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/e6/df/10/e6df10ec-20e2-4fc8-51a1-cb923ce992c4/196922680779_Cover.jpg/512x512bb.jpg",
-    previewUrl:
-      "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/81/94/e7/8194e75d-a406-1a51-f5c5-f9d16dc6770a/mzaf_3864734383388967952.plus.aac.ep.m4a",
-  },
-  {
-    title: "Ditto",
-    artist: "NewJeans",
-    albumUrl:
-      "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/e6/df/10/e6df10ec-20e2-4fc8-51a1-cb923ce992c4/196922680779_Cover.jpg/512x512bb.jpg",
-    previewUrl:
-      "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/97/47/da/9747daf7-ca2d-36ab-9379-6048398be273/mzaf_4598381608965119730.plus.aac.ep.m4a",
-  },
-  {
-    title: "Seven",
-    artist: "Jung Kook, Latto",
-    albumUrl:
-      "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/a5/a6/56/a5a6561a-f570-2fb1-5a3a-95b150c18f18/196922550928_Cover.jpg/512x512bb.jpg",
-    previewUrl:
-      "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/1a/0f/b3/1a0fb348-50a7-7007-19be-92dd193bf42b/mzaf_6397353486192641133.plus.aac.ep.m4a",
-  },
-  {
-    title: "Talk Saxy",
-    artist: "RIIZE",
-    albumUrl:
-      "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/96/e2/7f/96e27fed-4864-cfb9-65a4-4f91ba9f9a3c/888735945519.jpg/512x512bb.jpg",
-    previewUrl:
-      "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/97/5c/69/975c6961-9c0d-17fd-2f75-b3952380c3d0/mzaf_5072256935994720930.plus.aac.ep.m4a",
-  },
-];
+import { useUserInteract } from "../../../UserInteractContextProvider";
 
 const AnswerButton: React.FC<{
   isDisabled: boolean;
@@ -134,15 +84,23 @@ export const AnswerCard: React.FC<{ showAnswer: boolean }> = ({
   );
 };
 
+const enum ERoundState {
+  PREPARING,
+  PLAYING,
+  FINISHED,
+}
+
 export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
   state,
 }) => {
+  const isUserInteracted = useUserInteract();
+
   const audioRef = useRef<HTMLAudioElement>(new Audio());
   const albumRef = useRef<HTMLImageElement>(new Image());
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-  const [showAnswer, setShowAnswer] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [isRoundStarted, setIsRoundStarted] = useState<boolean>(false);
 
   const toggleMute = () => {
     setIsMuted((prevIsMuted) => !prevIsMuted);
@@ -156,28 +114,41 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
     albumRef.current.src = state.data.currentRound.albumUrl;
     audioRef.current.src = state.data.currentRound.previewUrl;
     audioRef.current.load();
-    audioRef.current.play();
 
-    setTimeout(() => {
-      setShowAnswer(true);
-    }, 3000);
+    const waitRoundStartTimeout = setTimeout(() => {
+      setIsRoundStarted(true);
+      audioRef.current.play();
+    }, state.data.currentRound.roundStartAt - Date.now());
 
     return () => {
+      clearTimeout(waitRoundStartTimeout);
       audioRef.current.pause();
     };
-  }, [state.data.currentRound]);
+  }, [state.data]);
 
   return (
     <>
+      {isUserInteracted === false && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-black">
+            <div className="font-bold text-white">
+              사운드 재생을 위해서 사용자 입력이 필요합니다
+            </div>
+            <div className="font-bold text-white">
+              정상적인 게임 진행을 위해 화면을 터치 해 주세요!
+            </div>
+          </div>
+        </div>
+      )}
       <motion.div
-        className="h-full w-full bg-purple-950 flex flex-col"
+        className="h-full w-full flex flex-col"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
         exit={{ opacity: 0 }}
       >
         <div className={styles.questionContainer}>
-          <AnswerCard showAnswer={showAnswer} />
+          <AnswerCard showAnswer={isRoundStarted} />
         </div>
         <div>
           {isMuted ? (
