@@ -1,10 +1,13 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "../../lib/utils";
 import albumFiesta from "/Fiesta.jpg";
-import styles from './styles.module.scss'
-import { CurrentRanking } from '../currentRanking';
-import { Header } from '../header';
+import styles from "./styles.module.scss";
+import { CurrentRanking } from "../currentRanking";
+import { Header } from "../header";
+import { LuVolume2 } from "react-icons/lu";
+import { LuVolumeX } from "react-icons/lu";
+
 const AnswerButton: React.FC<{
   isDisabled: boolean;
   isSelected?: boolean;
@@ -14,7 +17,9 @@ const AnswerButton: React.FC<{
 }> = ({ isSelected, isAnswer, text, onClick }) => {
   return (
     <button
-      className={`${styles.button} ${isSelected ? styles.selectedButton : ''} ${isAnswer ? styles.answerButton : ''}`}
+      className={`${styles.button} ${isSelected ? styles.selectedButton : ""} ${
+        isAnswer ? styles.answerButton : ""
+      }`}
       onClick={onClick}
     >
       {text}
@@ -78,45 +83,68 @@ export const AnswerCard: React.FC = () => {
 export const InRoundScene = () => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(true);
   const [showAnswer, setShowAnswer] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+
+  const toggleMute = () => {
+    setIsMuted((prevIsMuted) => !prevIsMuted);
+  };
+
   return (
     <>
-        <motion.div
+      <motion.div
         className={styles.container}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
         exit={{ opacity: 0 }}
       >
-          <Header/>
-          <div className={styles.questionContainer}>
-            <div className="font-bold" style={{fontSize:20}}>다음 노래의 제목은 무엇일까요?</div>
-            {showAnswer?
-            <AnswerCard />:           
-            <div className={styles.questionBox}>
-            ?
+        <Header />
+        <div className={styles.questionContainer}>
+          <div className="font-bold" style={{ fontSize: 20 }}>
+            다음 노래의 제목은 무엇일까요?
           </div>
-            }
-            </div>
-          <div>
-            <img 
-                  src='/src/assets/ingame/volumeUp.png'
-                  style={{width:30, height: 30, margin: 20}}
+          {showAnswer ? (
+            <AnswerCard />
+          ) : (
+            <div className={styles.questionBox}>?</div>
+          )}
+        </div>
+        <div>
+          {isMuted ? (
+            <LuVolumeX
+              style={{ width: 30, height: 30, margin: 20, cursor: "pointer" }}
+              onClick={toggleMute}
             />
-            <motion.div
-              className="origin-left"
-              style={{backgroundColor: '#6804FD', height: 10, width:'100%', margin:'20px 0', borderRadius: 50}}
-              initial={{
-                scaleX: 1,
-              }}
-              animate={{
-                scaleX: 0,
-              }}
-              transition={{ duration: 10, ease: "linear" }}
+          ) : (
+            <LuVolume2
+              style={{ width: 30, height: 30, margin: 20, cursor: "pointer" }}
+              onClick={toggleMute}
             />
-          </div>
-          <AnswerContainer />
+          )}
+          <motion.div
+            className="origin-left"
+            style={{
+              backgroundColor: "#6804FD",
+              height: 10,
+              width: "100%",
+              margin: "20px 0",
+              borderRadius: 50,
+            }}
+            initial={{
+              scaleX: 1,
+            }}
+            animate={{
+              scaleX: 0,
+            }}
+            transition={{ duration: 10, ease: "linear" }}
+          />
+        </div>
+        <AnswerContainer />
       </motion.div>
-      <CurrentRanking modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen}/>
+      <CurrentRanking
+        modalIsOpen={modalIsOpen}
+        setModalIsOpen={setModalIsOpen}
+      />
     </>
   );
 };
