@@ -7,6 +7,16 @@ db_host = ""
 db_name = "wits"
 db_password = ""
 
+connection = pymysql.connect(
+    host=db_host,
+    user=db_user,
+    password=db_password,
+    db=db_name,
+    port=db_port,
+    charset='utf8mb4',
+    cursorclass=pymysql.cursors.DictCursor
+    )
+
 def fetch_songs(artist_name):
     """
     주어진 가수의 노래 정보를 가져와 배열에 저장하는 함수.
@@ -23,13 +33,6 @@ def save_songs_and_themes(songs):
     노래 정보와 장르(테마)를 데이터베이스에 저장하는 함수.
     :param songs: 저장할 노래 정보가 담긴 배열.
     """
-    connection = pymysql.connect(host=db_host,
-                                 user=db_user,
-                                 password=db_password,
-                                 db=db_name,
-                                 port=db_port,
-                                 charset='utf8mb4',
-                                 cursorclass=pymysql.cursors.DictCursor)
 
     try:
         with connection.cursor() as cursor:
@@ -60,7 +63,7 @@ def save_songs_and_themes(songs):
             connection.commit()
 
     finally:
-        connection.close()
+        print("\n")
 
 # 예시 사용
 artist_names = [
@@ -87,3 +90,4 @@ for artist_name in artist_names:
             print(song)
             print("Error: " + song)
     save_songs_and_themes(res)
+connection.close()
