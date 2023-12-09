@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
-import styles from "./styles.module.scss";
 import { cn } from "../../../../../lib/utils";
 
 export const AnswerButton: React.FC<{
@@ -25,23 +24,23 @@ export const AnswerButton: React.FC<{
   return (
     <motion.button
       className={cn(
-        `${styles.button}`,
-        "w-full h-12 border-2 rounded-full",
+        "w-full h-12 rounded-md border-b-4 bg-blue-500 border-blue-700 text-white",
+        "text-sm font-bold break-keep text-ellipsis whitespace-nowrap overflow-hidden px-4",
         {
-          [`${styles.selectedButton}`]: isSelected,
-        },
-        "text-sm font-bold break-keep text-ellipsis whitespace-nowrap overflow-hidden px-2"
+          "bg-blue-300 border-blue-500": isDisabled,
+          "bg-blue-500 border-blue-700 ring-4 ring-offset-2 ring-blue-500":
+            isSelected,
+          "bg-green-500 border-green-700": isAnswer,
+        }
       )}
       onClick={onClick}
       animate={state}
       variants={{
         idle: {
-          backgroundColor: "",
           rotate: 0,
           scale: 1,
         },
         answer: {
-          backgroundColor: "green",
           rotate: [30, -20, 15, -10, 0],
           scale: [1, 1.05, 1.1, 1.05, 1],
           transition: {
