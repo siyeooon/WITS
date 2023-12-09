@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { cn } from "../../lib/utils";
 import albumFiesta from "/Fiesta.jpg";
 import styles from "./styles.module.scss";
 import { CurrentRanking } from "../currentRanking";
 import { Header } from "../header";
 import { LuVolume2 } from "react-icons/lu";
 import { LuVolumeX } from "react-icons/lu";
+import { MusicInfo } from "@wits/types";
 
 const AnswerButton: React.FC<{
   isDisabled: boolean;
@@ -80,7 +80,8 @@ export const AnswerCard: React.FC = () => {
   );
 };
 
-export const InRoundScene = () => {
+
+export const InRoundScene: React.FC<{ gameData:MusicInfo }>= ({gameData}) => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(true);
   const [showAnswer, setShowAnswer] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -145,6 +146,18 @@ export const InRoundScene = () => {
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
       />
+      <div style={{width: 0, height: 0, backgroundColor:'transparent', zIndex: 0}}>
+        <audio 
+          controls
+          autoPlay
+          muted={isMuted}
+        >
+          <source 
+            src={gameData.songs.previewUrl}
+            type="audio/mpeg"
+          />
+      </audio>
+      </div>
     </>
   );
 };

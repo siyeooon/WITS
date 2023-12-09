@@ -1,4 +1,4 @@
-export const music = [
+export const musicData = [
       {
         songs: {
           id: 36,
