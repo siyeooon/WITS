@@ -183,11 +183,6 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
             <div className="font-bold mb-4" style={{ fontSize: 20 }}>
               다음 노래의 제목은 무엇일까요?
             </div>
-
-            <AnswerCard
-              showAnswer={roundState === ERoundState.FINISHED}
-              albumUrl={state.data.currentRound.albumUrl}
-            />
           </div>
         </div>
 
