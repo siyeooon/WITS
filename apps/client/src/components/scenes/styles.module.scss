@@ -4,8 +4,9 @@
   width: 100dvw;
   height: 100dvh;
   display: flex;
+  overflow: hidden;
   flex-direction: column;
-  background-color: #29252e;
+  background-color: hsl(267, 11%, 16%);
   color: white;
 }
 
