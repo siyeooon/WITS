@@ -1,7 +1,7 @@
 import { db, schema } from "../../database";
 import { sql } from "drizzle-orm";
 import { serverEventEmitter, userEventEmitter } from "./userEventEmitter";
-import { EGameStatus } from "@wits/types";
+import { TVoteThemeStageState } from "@wits/types";
 
 /**
  * 테마 선택 스테이지
@@ -16,17 +16,17 @@ export async function selectThemeStage() {
     .orderBy(sql`RAND()`)
     .limit(MAX_SELECT_THEME);
 
-  const availableThemesData = availableThemeRows.map((themeInfo) => ({
-    id: themeInfo.id,
+  const availableThemesData = availableThemeRows.map((themeInfo, i) => ({
     name: themeInfo.name,
-    themeImageUrl: "",
+    imageUrl: "",
   }));
   const availableThemeCounts = availableThemeRows.length;
 
-  const gameInfo = {
-    gameStatus: EGameStatus.SELECT_THEME,
-    availableThemses: availableThemesData,
-    selectedThemeIndex: undefined,
+  const gameInfo: TVoteThemeStageState = {
+    stage: "voteTheme",
+    data: {
+      themeList: availableThemesData,
+    },
   };
   serverEventEmitter.emit("stateUpdated", gameInfo);
 
@@ -66,7 +66,8 @@ export async function selectThemeStage() {
   const selectedThemeIndex =
     heighestVotedThemes[Math.floor(Math.random() * heighestVotedThemes.length)];
 
-  gameInfo.selectedThemeIndex = selectedThemeIndex;
+  gameInfo.data.selectedThemeIndex = selectedThemeIndex;
+
   serverEventEmitter.emit("stateUpdated", gameInfo);
 
   const selectedTheme = availableThemeRows[selectedThemeIndex];

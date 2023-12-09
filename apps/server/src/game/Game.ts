@@ -1,4 +1,3 @@
-import { TGameState } from "@wits/types";
 import { selectThemeStage } from "./selectThemeStage";
 import { playStage } from "./playStage";
 

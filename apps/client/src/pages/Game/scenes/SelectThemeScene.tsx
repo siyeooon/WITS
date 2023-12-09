@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import viteLogo from "/vite.svg";
 import { cn } from "../../../lib/utils";
 import { motion } from "framer-motion";
-import { TSelectThemeRoundData } from "@wits/types";
+import { useGameState } from "../useGameState";
+import { TVoteThemeStageState } from "@wits/types";
 
 const Avatar: React.FC<{ text: string }> = ({ text }) => {
   return (
@@ -55,33 +56,18 @@ const ThemeSelectCard: React.FC<
   );
 };
 
-const SelectThemeScene: React.FC = () => {
-  const [availableThemses, setAvailableThemses] = useState<
-    {
-      name: string;
-      imageUrl: string;
-    }[]
-  >([
-    {
-      name: "A",
-      imageUrl: "",
-    },
-    {
-      name: "A",
-      imageUrl: "",
-    },
-    {
-      name: "A",
-      imageUrl: "",
-    },
-    {
-      name: "A",
-      imageUrl: "",
-    },
-  ]);
-
+const SelectThemeScene: React.FC<{ state: TVoteThemeStageState }> = ({
+  state,
+}) => {
   const [selectedIndex, setSelectedIndex] = useState<number>();
-  const [resultIndex, setResultIndex] = useState<number>(1);
+
+  const canAnswer = useMemo(() => {
+    return state.data.selectedThemeIndex === undefined;
+  }, [state.data.selectedThemeIndex]);
+
+  const resultIndex = useMemo(() => {
+    return state.data.selectedThemeIndex;
+  }, [state.data.selectedThemeIndex]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {});
@@ -112,13 +98,14 @@ const SelectThemeScene: React.FC = () => {
       </div>
 
       <div className="mt-4 w-full grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
-        {availableThemses.map((themeInfo, i) => (
+        {state.data.themeList.map((themeInfo, i) => (
           <ThemeSelectCard
             key={i}
             name={themeInfo.name}
             isSelected={i === selectedIndex}
             isResult={i === resultIndex}
             onClick={() => {
+              if (!canAnswer) return;
               setSelectedIndex(i);
             }}
           />

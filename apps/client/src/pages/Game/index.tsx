@@ -1,19 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { TGameStageState } from "@wits/types";
 import { AnimatePresence } from "framer-motion";
 import { InRoundScene } from "./scenes/InRoundScene";
 import SelectThemeScene from "./scenes/SelectThemeScene";
 import { Header } from "../../components/header";
+import { GameDataContext } from "./GameDataContext";
 
 export default function Game() {
-  return <SceneController />;
-}
-
-const SceneController = () => {
   const [isConnected, setIsConnected] = useState(false);
 
-  const [gameStage, setGameStage] = useState<"voteTheme" | "playQuiz">();
-  const [selectThemeStageState, setSelectThemeStageState] = useState();
-  const [playQuizStageState, setPlayQuizStageState] = useState();
+  const [gameState, setGameState] = useState<TGameStageState>();
 
   const ws = useRef<WebSocket | null>(null);
 
@@ -27,8 +23,8 @@ const SceneController = () => {
 
       const data = JSON.parse(event.data);
 
-      if (data.type === "stageChanged") {
-        setGameStage(data.state);
+      if (data.type === "stateUpdated") {
+        setGameState(data.state);
       }
     };
 
@@ -40,25 +36,31 @@ const SceneController = () => {
   }, []);
 
   const SceneComponent = useMemo(() => {
-    if (gameStage === undefined) {
+    if (gameState === undefined) {
       return null;
     }
 
-    if (gameData.gameStatus ===  "voteTheme") {
-      return <SelectThemeScene gameData={gameData} />;
-    } else if (gameData.gameStatus ===  "playQuiz") {
-      return <InRoundScene />;
+    if (gameState.stage === "voteTheme") {
+      return <SelectThemeScene state={gameState} />;
     }
-  }, [gameStage]);
+
+    if (gameState.stage === "playQuiz") {
+      return <InRoundScene state={gameState} />;
+    }
+  }, [gameState]);
+
+  if (gameState === undefined) {
+    return null;
+  }
 
   return (
-    <div className="w-[100dvw] h-[100dvh] flex flex-col">
-      <Header />
-      <div className="flex-1">
-        <AnimatePresence mode="wait">
-          <SelectThemeScene />
-        </AnimatePresence>
+    <GameDataContext.Provider value={gameState}>
+      <div className="w-[100dvw] h-[100dvh] flex flex-col">
+        <Header />
+        <div className="flex-1">
+          <AnimatePresence mode="wait">{SceneComponent}</AnimatePresence>
+        </div>
       </div>
-    </div>
+    </GameDataContext.Provider>
   );
-};
+}

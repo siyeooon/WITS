@@ -2,9 +2,7 @@ import { shuffleArray } from "../utils/shuffleArray";
 import { db, schema } from "../../database";
 import { eq } from "drizzle-orm";
 import { serverEventEmitter, userEventEmitter } from "./userEventEmitter";
-import { EGameStatus, TPlayGameData } from "@wits/types";
-
-async function playRounnd() {}
+import { TPlayStageState } from "@wits/types";
 
 /**
  * 플레이 스테이지
@@ -34,6 +32,7 @@ export async function playStage(selectedThemeInfo: {
   console.log("==========================================");
 
   const roundCounts = Math.min(MAX_ROUND, selectedThemeSongs.length);
+
   /**
    * 라운드 진행
    */
@@ -65,33 +64,31 @@ export async function playStage(selectedThemeInfo: {
 
     // 노래 및 앨범커버를 이 시간 (5초) 동안 prefetch 진행
     // 5초 이후 클라이언트에서 게임 진행
-    const roundWillStartAt = Date.now() + ROUND_PREPARE_TIME;
-    const roundEndAt = roundWillStartAt + ROUND_DURATION;
+    const roundStartAt = Date.now() + ROUND_PREPARE_TIME;
+    const roundEndAt = roundStartAt + ROUND_DURATION;
 
-    const stageInfo: TPlayGameData = {
-      gameStatus: EGameStatus.IN_GAME,
-
-      currentRoundInfo: {
-        roundNo: 0,
-        questionType: "songName",
-        title: currentRoundSongInfo.songs.title,
-        artist: currentRoundSongInfo.songs.artist,
-        albumUrl: currentRoundSongInfo.songs.albumUrl,
-        previewUrl: currentRoundSongInfo.songs.previewUrl,
-        startAt: roundWillStartAt,
-        endAt: roundEndAt,
+    const gameInfo: TPlayStageState = {
+      stage: "playQuiz",
+      data: {
+        currentRound: {
+          albumUrl: correctAnswer.songs.albumUrl,
+          previewUrl: correctAnswer.songs.previewUrl,
+          roundNo: i + 1,
+          answerList: answerList.map((answer) => answer.songs.title),
+          roundStartAt: roundStartAt,
+        },
+        maxRound: roundCounts,
+        theme: selectedThemeInfo.name,
       },
-
-      maxRound: roundCounts,
     };
 
-    serverEventEmitter.emit("stateUpdated", stageInfo);
+    serverEventEmitter.emit("stateUpdated", gameInfo);
 
     const onReceiveAnswer = (userId: number, answerIndex: number) => {
       const receivedAt = Date.now();
 
       // 게임 시작 내 응답이 아니라면 무시
-      if (receivedAt < roundWillStartAt || receivedAt > roundEndAt) {
+      if (receivedAt < roundStartAt || receivedAt > roundEndAt) {
         return;
       }
 
@@ -100,7 +97,7 @@ export async function playStage(selectedThemeInfo: {
         return;
       }
 
-      const diff = receivedAt - roundWillStartAt;
+      const diff = receivedAt - roundStartAt;
 
       userResponseMap.set(userId, {
         answerIndex: answerIndex,
@@ -114,6 +111,13 @@ export async function playStage(selectedThemeInfo: {
     await new Promise((resolve) =>
       setTimeout(resolve, roundEndAt - Date.now())
     );
+
+    userEventEmitter.off("selectAnswer", onReceiveAnswer);
+
+    gameInfo.data.currentRound.answerIndex = correctAnswerIndex;
+    serverEventEmitter.emit("stateUpdated", gameInfo);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // TODO: 답변 이벤트 수신 종료
     // 답변 취합
@@ -135,5 +139,13 @@ export async function playStage(selectedThemeInfo: {
       const prevScore = playerScore.get(userId) || 0;
       playerScore.set(userId, prevScore + 1);
     });
+
+    gameInfo.data.currentRound.gameResult = [
+      {
+        username: "test",
+        responseTime: 1000,
+      },
+    ];
+    serverEventEmitter.emit("stateUpdated", gameInfo);
   }
 }

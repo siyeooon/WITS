@@ -5,6 +5,7 @@ import styles from "./styles.module.scss";
 import { CurrentRanking } from "../../../components/currentRanking";
 import { LuVolume2 } from "react-icons/lu";
 import { LuVolumeX } from "react-icons/lu";
+import { TPlayStageState } from "@wits/types";
 
 const dummyData = [
   {
@@ -76,7 +77,7 @@ const AnswerButton: React.FC<{
   );
 };
 
-export const AnswerContainer: React.FC<{ answerList: string[] }> = ({
+export const AnswerContainer: React.FC<{ answerList?: string[] }> = ({
   answerList,
 }) => {
   const [isAnswerable, setIsAnswerable] = useState<boolean>(false);
@@ -95,7 +96,7 @@ export const AnswerContainer: React.FC<{ answerList: string[] }> = ({
 
   return (
     <div className={styles.buttonContainer}>
-      {answerList.map((answer, index) => (
+      {answerList?.map((answer, index) => (
         <AnswerButton
           text={answer}
           isDisabled={!isAnswerable}
@@ -143,18 +144,13 @@ export const AnswerCard: React.FC<{ showAnswer: boolean }> = ({
   );
 };
 
-export const InRoundScene = () => {
+export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
+  state,
+}) => {
   const audioRef = useRef<HTMLAudioElement>(new Audio());
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(true);
   const [showAnswer, setShowAnswer] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
-
-  const [answerList, setAnswerList] = useState([
-    "FIESTA",
-    "Next Level",
-    "Dun Dun Dance",
-    "Gee",
-  ]);
 
   const toggleMute = () => {
     setIsMuted((prevIsMuted) => !prevIsMuted);
@@ -250,7 +246,7 @@ export const InRoundScene = () => {
             />
           </div>
         </div>
-        <AnswerContainer answerList={answerList} />
+        <AnswerContainer answerList={state.data.currentRound.answerList} />
       </motion.div>
       <CurrentRanking
         modalIsOpen={modalIsOpen}
