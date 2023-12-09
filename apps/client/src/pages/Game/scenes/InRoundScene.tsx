@@ -77,22 +77,12 @@ const AnswerButton: React.FC<{
   );
 };
 
-export const AnswerContainer: React.FC<{ answerList?: string[] }> = ({
-  answerList,
-}) => {
+export const AnswerContainer: React.FC<{
+  answerList?: string[];
+  answerIndex?: number;
+}> = ({ answerIndex, answerList }) => {
   const [isAnswerable, setIsAnswerable] = useState<boolean>(false);
   const [selectedIndex, setSelectedIndex] = useState<number>();
-  const [answerIndex, setAnswerIndex] = useState<number>();
-
-  useEffect(() => {
-    const tempAnswerTimeout = setTimeout(() => {
-      setAnswerIndex(Math.floor(Math.random() * 4));
-    }, 1000);
-
-    return () => {
-      clearTimeout(tempAnswerTimeout);
-    };
-  }, []);
 
   return (
     <div className={styles.buttonContainer}>
@@ -148,7 +138,9 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
   state,
 }) => {
   const audioRef = useRef<HTMLAudioElement>(new Audio());
-  const [modalIsOpen, setModalIsOpen] = useState<boolean>(true);
+  const albumRef = useRef<HTMLImageElement>(new Image());
+
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [showAnswer, setShowAnswer] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
 
@@ -161,22 +153,24 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
   }, [isMuted]);
 
   useEffect(() => {
-    const selectedMusic =
-      dummyData[Math.floor(Math.random() * dummyData.length)];
-
-    audioRef.current.src = selectedMusic.previewUrl;
+    albumRef.current.src = state.data.currentRound.albumUrl;
+    audioRef.current.src = state.data.currentRound.previewUrl;
     audioRef.current.load();
     audioRef.current.play();
 
     setTimeout(() => {
       setShowAnswer(true);
     }, 3000);
-  }, []);
+
+    return () => {
+      audioRef.current.pause();
+    };
+  }, [state.data.currentRound]);
 
   return (
     <>
       <motion.div
-        className={styles.container}
+        className="h-full w-full bg-purple-950"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -188,8 +182,8 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
             onClick={() => {
               const selectedMusic =
                 dummyData[Math.floor(Math.random() * dummyData.length)];
-              
-              audioRef.current.volume= 0.5;
+
+              audioRef.current.volume = 0.5;
               audioRef.current.src = selectedMusic.previewUrl;
               audioRef.current.load();
               audioRef.current.play();
@@ -246,7 +240,10 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
             />
           </div>
         </div>
-        <AnswerContainer answerList={state.data.currentRound.answerList} />
+        <AnswerContainer
+          answerList={state.data.currentRound.answerList}
+          answerIndex={state.data.currentRound.answerIndex}
+        />
       </motion.div>
       <CurrentRanking
         modalIsOpen={modalIsOpen}
