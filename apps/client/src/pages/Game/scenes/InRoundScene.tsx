@@ -8,6 +8,7 @@ import { LuVolumeX } from "react-icons/lu";
 import { TPlayStageState } from "@wits/types";
 import { useUserInteract } from "../../../UserInteractContextProvider";
 import InRanking from "../../../components/scenes/InRanking";
+import { cn } from "../../../lib/utils";
 
 const AnswerButton: React.FC<{
   isDisabled: boolean;
@@ -18,18 +19,23 @@ const AnswerButton: React.FC<{
 }> = ({ isSelected, isAnswer, text, onClick }) => {
   return (
     <motion.button
-      className={`${styles.button} ${isSelected ? styles.selectedButton : ""} ${
-        isAnswer ? styles.answerButton : ""
-      }`}
+      className={cn(
+        `${styles.button}`,
+        {
+          [`${styles.selectedButton}`]: isSelected,
+        },
+        "text-sm font-bold break-keep text-ellipsis whitespace-nowrap overflow-hidden px-2"
+      )}
       onClick={onClick}
       animate={isAnswer ? "answer" : "idle"}
       variants={{
         idle: {
+          backgroundColor: "",
           rotate: 0,
           scale: 1,
         },
         answer: {
-          backgroundColor: "green",
+          backgroundColor: "rgba(103, 0, 255, 1)",
           rotate: [40, -30, 20, -10, 0],
           scale: [1, 1.1, 1.2, 1.1, 1],
           transition: { duration: 0.5, ease: "easeInOut" },
@@ -49,7 +55,7 @@ export const AnswerContainer: React.FC<{
   const [selectedIndex, setSelectedIndex] = useState<number>();
 
   return (
-    <div className={styles.buttonContainer}>
+    <div className={cn("flex flex-wrap items-center justify-center gap-4 p-4")}>
       {answerList?.map((answer, index) => (
         <AnswerButton
           text={answer}
@@ -113,7 +119,6 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
   const audioRef = useRef<HTMLAudioElement>(new Audio());
   const albumRef = useRef<HTMLImageElement>(new Image());
 
-  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
 
   const [roundState, setRoundState] = useState<ERoundState>();
