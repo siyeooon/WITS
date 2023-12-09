@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { GameStateContext } from "./TGameData";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { TGameState } from "@wits/types";
 
-export function GameStateContextProvider({
+export const GameStateContext = createContext<TGameState | null>(null);
+
+export function GameContextProvider({
   children,
 }: {
   children: React.ReactNode;
@@ -39,4 +40,10 @@ export function GameStateContextProvider({
       {children}
     </GameStateContext.Provider>
   );
+}
+
+export function useGameState() {
+  const state = useContext(GameStateContext);
+
+  return state;
 }
