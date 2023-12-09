@@ -89,6 +89,7 @@ const enum ERoundState {
   PREPARING,
   PLAYING,
   FINISHED,
+  RESULT,
 }
 
 export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
@@ -101,7 +102,8 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
-  const [isRoundStarted, setIsRoundStarted] = useState<boolean>(false);
+
+  const [roundState, setRoundState] = useState<ERoundState>();
 
   const toggleMute = () => {
     setIsMuted((prevIsMuted) => !prevIsMuted);
@@ -112,18 +114,21 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
   }, [isMuted]);
 
   useEffect(() => {
+    // 미리 prefetch
     albumRef.current.src = state.data.currentRound.albumUrl;
     audioRef.current.src = state.data.currentRound.previewUrl;
     audioRef.current.load();
 
+    setRoundState(ERoundState.PREPARING);
+
+    // 라운드 시작에 맞춰서 재생 및 결과 오픈
     const waitRoundStartTimeout = setTimeout(() => {
-      setIsRoundStarted(true);
+      setRoundState(ERoundState.PLAYING);
       audioRef.current.play();
     }, state.data.currentRound.roundStartAt - Date.now());
 
     return () => {
       clearTimeout(waitRoundStartTimeout);
-      audioRef.current.pause();
     };
   }, [state.data]);
 
@@ -151,7 +156,7 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
         exit={{ opacity: 0 }}
       >
         <div className={styles.questionContainer}>
-          <AnswerCard showAnswer={isRoundStarted} />
+          <AnswerCard showAnswer={roundState === ERoundState.FINISHED} />
         </div>
         <div>
           {isMuted ? (
