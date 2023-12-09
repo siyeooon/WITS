@@ -42,7 +42,7 @@ const ThemeSelectCard: React.FC<
     >
       <img
         src={viteLogo}
-        className="flex-1 aspect-square rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none"
+        className="aspect-square rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none"
       />
       <div className="font-bold text-lg text-center">{name}</div>
 
@@ -55,27 +55,69 @@ const ThemeSelectCard: React.FC<
   );
 };
 
-const SelectThemeScene: React.FC<{ gameData: TSelectThemeRoundData }> = ({
-  gameData,
-}) => {
+const SelectThemeScene: React.FC = () => {
+  const [availableThemses, setAvailableThemses] = useState<
+    {
+      name: string;
+      imageUrl: string;
+    }[]
+  >([
+    {
+      name: "A",
+      imageUrl: "",
+    },
+    {
+      name: "A",
+      imageUrl: "",
+    },
+    {
+      name: "A",
+      imageUrl: "",
+    },
+    {
+      name: "A",
+      imageUrl: "",
+    },
+  ]);
+
   const [selectedIndex, setSelectedIndex] = useState<number>();
+  const [resultIndex, setResultIndex] = useState<number>(1);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {});
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, []);
 
   return (
     <motion.div
+      className="w-full h-full p-4 flex flex-col gap-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
       exit={{ opacity: 0 }}
-      className="bg-white"
     >
-      <div className="text-xl font-bold">다음 게임의 테마를 정해주세요!</div>
-      <div className="w-full grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2">
-        {gameData.availableThemses.map((themeInfo, i) => (
+      <div className="text-xl font-bold text-center">
+        다음 게임의 테마를 투표해주세요!
+      </div>
+
+      <div className="relative">
+        <div className="absolute w-full rounded-full h-2 bg-gray-800" />
+        <div
+          className="absolute w-full rounded-full h-2 bg-purple-500 origin-left"
+          style={{ transform: "scaleX(0.3)" }}
+        />
+      </div>
+
+      <div className="mt-4 w-full grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
+        {availableThemses.map((themeInfo, i) => (
           <ThemeSelectCard
-            key={themeInfo.id}
+            key={i}
             name={themeInfo.name}
             isSelected={i === selectedIndex}
-            isResult={i === gameData.selectedThemeIndex}
+            isResult={i === resultIndex}
             onClick={() => {
               setSelectedIndex(i);
             }}

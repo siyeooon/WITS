@@ -1,20 +1,16 @@
 import { useNavigate } from 'react-router-dom'
-import styles from './styles.module.scss'
-export const Header = ()=>{
+import { cn } from "../../lib/utils";
+export const Header = () => {
   const navigate = useNavigate();
-    return(       
-    <div className={styles.header}>
-        <div className={styles.logo}>WITS</div>
-        <div style={{display:'flex'}}>
-            <img 
-              src='/src/assets/ingame/ranking.png'
-              style={{width:50, height: 50, margin:5}}
-              onClick={()=>navigate('/ranking')}
-            />
-            <img 
-                src='/src/assets/ingame/profile.png'
-                style={{width:50, height: 50, margin: 5}}
-            />
-        </div>
-      </div>)
-}
+  return (
+    <div className={"flex flex-row justify-between items-center h-12 p-2"}>
+      <div className={cn("text-xl font-logo text-black dark:text-white mt-2")}>
+        WITS
+      </div>
+      <div className="flex flex-row gap-2">
+        <img src="/src/assets/ingame/ranking.png" className="h-10 w-10" onClick={()=>navigate('/ranking')}/>
+        <img src="/src/assets/ingame/profile.png" className="h-10 w-10" />
+      </div>
+    </div>
+  );
+};

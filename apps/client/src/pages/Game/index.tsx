@@ -6,18 +6,42 @@ import SelectThemeScene from "./scenes/SelectThemeScene";
 import { EGameStatus } from "@wits/types";
 
 export default function Game() {
-  return (
-    <GameContextProvider>
-      <SceneController />
-    </GameContextProvider>
-  );
+  return <SceneController />;
 }
 
 const SceneController = () => {
-  const gameData = useGameState();
+  const [isConnected, setIsConnected] = useState(false);
+
+  const [gameStage, setGameStage] = useState<"voteTheme" | "playQuiz">();
+  const [selectThemeStageState, setSelectThemeStageState] = useState();
+  const [playQuizStageState, setPlayQuizStageState] = useState();
+
+  const ws = useRef<WebSocket | null>(null);
+
+  useEffect(() => {
+    const socket = new WebSocket("ws://localhost:3000/");
+
+    socket.onopen = () => setIsConnected(true);
+    socket.onclose = () => setIsConnected(false);
+    socket.onmessage = (event) => {
+      console.log(event.data);
+
+      const data = JSON.parse(event.data);
+
+      if (data.type === "stageChanged") {
+        setGameStage(data.state);
+      }
+    };
+
+    ws.current = socket;
+
+    return () => {
+      socket.close();
+    };
+  }, []);
 
   const SceneComponent = useMemo(() => {
-    if (!gameData) {
+    if (gameStage === undefined) {
       return null;
     }
 
@@ -26,11 +50,16 @@ const SceneController = () => {
     } else if (gameData.gameStatus ===  EGameStatus.IN_GAME) {
       return <InRoundScene />;
     }
-  }, [gameData]);
+  }, [gameStage]);
 
   return (
-    <AnimatePresence mode="wait">
-      <InRoundScene />
-    </AnimatePresence>
+    <div className="w-[100dvw] h-[100dvh] flex flex-col">
+      <Header />
+      <div className="flex-1">
+        <AnimatePresence mode="wait">
+          <SelectThemeScene />
+        </AnimatePresence>
+      </div>
+    </div>
   );
 };
