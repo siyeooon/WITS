@@ -17,14 +17,14 @@ export const AnswerCard: React.FC<{
     <>
       {showAnswer === false ? (
         <div className="flex-1 w-full animate-pulse flex flex-row items-center justify-center gap-2 p-2">
-          <div className="text-xl font-bold h-48 w-48 rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none flex items-center justify-center">
+          <div className="text-xl font-bold h-36 w-36 rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none flex items-center justify-center">
             ?
           </div>
         </div>
       ) : (
         <div className="flex-1 w-full flex flex-row items-center justify-center gap-2 p-2">
           <img
-            className="h-48 w-48 rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none"
+            className="h-36 w-36 rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none"
             src={albumUrl}
           />
         </div>
@@ -117,6 +117,58 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
         transition={{ duration: 1 }}
         exit={{ opacity: 0 }}
       >
+        <div className="overflow-x-auto ">
+          <div className="flex flex-row gap-2 w-fit">
+            <div className="relative h-14 w-20 rounded shadow-md bg-slate-500 border-b-4 border-slate-700">
+              <div className="absolute left-1 top-1 text-sm font-bold text-white">
+                #1
+              </div>
+              <div className="absolute inset-x-0 bottom-0 text-sm text-center font-bold text-white">
+                1,234
+              </div>
+            </div>
+            <div className="relative h-14 w-20 rounded shadow-md bg-slate-500 border-b-4 border-slate-700">
+              <div className="absolute left-1 top-1 text-sm font-bold text-white">
+                #2
+              </div>
+              <div className="absolute inset-x-0 bottom-0 text-sm text-center font-bold text-white">
+                1,234
+              </div>
+            </div>
+            <div className="relative h-14 w-20 rounded shadow-md bg-slate-500 border-b-4 border-slate-700">
+              <div className="absolute left-1 top-1 text-sm font-bold text-white">
+                #3
+              </div>
+              <div className="absolute inset-x-0 bottom-0 text-sm text-center font-bold text-white">
+                1,234
+              </div>
+            </div>
+            <div className="relative h-14 w-20 rounded shadow-md bg-slate-500 border-b-4 border-slate-700">
+              <div className="absolute left-1 top-1 text-sm font-bold text-white">
+                #4
+              </div>
+              <div className="absolute inset-x-0 bottom-0 text-sm text-center font-bold text-white">
+                1,234
+              </div>
+            </div>
+            <div className="relative h-14 w-20 rounded shadow-md bg-slate-500 border-b-4 border-slate-700">
+              <div className="absolute left-1 top-1 text-sm font-bold text-white">
+                #5
+              </div>
+              <div className="absolute inset-x-0 bottom-0 text-sm text-center font-bold text-white">
+                1,234
+              </div>
+            </div>
+            <div className="relative h-14 w-20 rounded shadow-md bg-slate-500 border-b-4 border-slate-700">
+              <div className="absolute left-1 top-1 text-sm font-bold text-white">
+                #6
+              </div>
+              <div className="absolute inset-x-0 bottom-0 text-sm text-center font-bold text-white">
+                1,234
+              </div>
+            </div>
+          </div>
+        </div>
         {/* 퀴즈 영역 */}
         <div className="relative flex-1 flex flex-col items-center justify-center p-2">
           <div className="absolute right-2 top-2 rounded-full bg-blue-300 px-4 text-sm font-bold">
