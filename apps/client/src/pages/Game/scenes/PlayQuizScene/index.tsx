@@ -15,10 +15,6 @@ export const AnswerCard: React.FC<{
 }> = ({ showAnswer, albumUrl }) => {
   return (
     <>
-      <div className="font-bold mb-8" style={{ fontSize: 20 }}>
-        다음 노래의 제목은 무엇일까요?
-      </div>
-
       {showAnswer === false ? (
         <div className="flex-1 w-full animate-pulse flex flex-row items-center justify-center gap-2 p-2">
           <div className="text-xl font-bold h-48 w-48 rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none flex items-center justify-center">
@@ -121,15 +117,29 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
         transition={{ duration: 1 }}
         exit={{ opacity: 0 }}
       >
-        <div className="font-bold text-xl text-center">
-          {state.data.currentRound.roundNo} / {state.data.maxRound} 라운드
+        {/* 퀴즈 영역 */}
+        <div className="relative flex-1 flex flex-col items-center justify-center p-2">
+          <div className="absolute right-2 top-2 rounded-full bg-blue-300 px-4 text-sm font-bold">
+            {state.data.theme}
+          </div>
+
+          <div className="font-bold text-xl text-center">
+            {state.data.currentRound.roundNo} / {state.data.maxRound} 라운드
+          </div>
+
+          <div className="flex-1 items-center justify-center flex flex-col">
+            <div className="font-bold mb-4" style={{ fontSize: 20 }}>
+              다음 노래의 제목은 무엇일까요?
+            </div>
+
+            <AnswerCard
+              showAnswer={roundState === ERoundState.FINISHED}
+              albumUrl={state.data.currentRound.albumUrl}
+            />
+          </div>
         </div>
-        <div className="flex-1 items-center justify-center flex flex-col">
-          <AnswerCard
-            showAnswer={roundState === ERoundState.FINISHED}
-            albumUrl={state.data.currentRound.albumUrl}
-          />
-        </div>
+
+        {/* 컨트롤 영역 */}
         <div>
           {isMuted ? (
             <LuVolumeX
@@ -160,6 +170,8 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
             />
           </div>
         </div>
+
+        {/* 답변 영역 */}
         <AnswerButtonContainer
           answerList={state.data.currentRound.answerList}
           answerIndex={state.data.currentRound.answerIndex}
