@@ -1,9 +1,8 @@
-import { GameContextProvider, useGameState } from "./GameStateContextProvider";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { InRoundScene } from "./scenes/InRoundScene";
 import SelectThemeScene from "./scenes/SelectThemeScene";
-import { EGameStatus } from "@wits/types";
+import { Header } from "../../components/header";
 
 export default function Game() {
   return <SceneController />;
@@ -45,9 +44,9 @@ const SceneController = () => {
       return null;
     }
 
-    if (gameData.gameStatus ===  EGameStatus.SELECT_THEME) {
+    if (gameData.gameStatus ===  "voteTheme") {
       return <SelectThemeScene gameData={gameData} />;
-    } else if (gameData.gameStatus ===  EGameStatus.IN_GAME) {
+    } else if (gameData.gameStatus ===  "playQuiz") {
       return <InRoundScene />;
     }
   }, [gameStage]);
