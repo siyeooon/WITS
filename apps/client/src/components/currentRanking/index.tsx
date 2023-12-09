@@ -9,6 +9,27 @@ export const CurrentRanking = ({
   modalIsOpen,
   setModalIsOpen,
 }: CurrentRankingProps) => {
+  const [countdown, setCountdown] = useState(10);
+  useEffect(() => {
+    let countdownInterval: NodeJS.Timeout;
+
+    if (modalIsOpen) {
+      countdownInterval = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(countdownInterval);
+    };
+  }, [modalIsOpen]);
+
+  useEffect(() => {
+    if (countdown === 0) {
+      setModalIsOpen(false);
+    }
+  }, [countdown, setModalIsOpen]);
+
   return (
     modalIsOpen && (
       <div className={styles.container}>
@@ -30,7 +51,7 @@ export const CurrentRanking = ({
           </div>
         </div>
         <div className={styles.remainingTime}>
-          <span>10초</span> 뒤에 다음게임이 시작됩니다.
+          <span>{countdown}초</span> 뒤에 다음게임이 시작됩니다.
         </div>
       </div>
     )
