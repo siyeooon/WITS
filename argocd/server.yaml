@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+      - name: server
+        image: harbor.aolda.net/wits/server:f59da316efce3df82bfb6b1ca4c3a29636fc5cd8
+        ports:
+        - containerPort: 3000
+        env:
+        - name: SERVER_IP
+          value: "172.16.3.92"
+        
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: server
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000
+  selector:
+    app: server
+  type: LoadBalancer
