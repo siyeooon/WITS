@@ -7,6 +7,7 @@ import { LuVolume2 } from "react-icons/lu";
 import { LuVolumeX } from "react-icons/lu";
 import { TPlayStageState } from "@wits/types";
 import { useUserInteract } from "../../../UserInteractContextProvider";
+import InRanking from "../../../components/scenes/InRanking";
 
 const AnswerButton: React.FC<{
   isDisabled: boolean;
@@ -140,6 +141,8 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
           </div>
         </div>
       )}
+      <InRanking quickAnsweredPlayers={["1", "2", "3"]} />
+
       <motion.div
         className="h-full w-full flex flex-col"
         initial={{ opacity: 0 }}
