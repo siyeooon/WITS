@@ -12,7 +12,7 @@ const Signin = () => {
 
   const handleClick = () => {
     signInWithPopup(auth, provider).then((data: UserCredential) => {
-      if (data.user.email !== null){
+      if (data.user.email !== null) {
         setValue(data.user.email);
         localStorage.setItem("email", data.user.email);
         navigate("/ingame");
@@ -22,7 +22,7 @@ const Signin = () => {
 
   useEffect(() => {
     const email = localStorage.getItem("email");
-    if (email !== null){
+    if (email !== null) {
       setValue(email);
     }
   }, []);
@@ -51,7 +51,7 @@ const Home = () => {
         }}
       >
         <div className="absolute top-48 z-10 inset-x-0 flex items-center justify-center">
-          <h1 className="text-white text-7xl font-bold">WITS</h1>
+          <h1 className="text-white text-7xl font-logo">WITS</h1>
           <button
             className="ml-2 text-white text-xl cursor-pointer flex items-center justify-center w-7 h-7 bg-gray-300 rounded-full"
             onMouseEnter={() => setShowQuestionMarkDescription(true)}

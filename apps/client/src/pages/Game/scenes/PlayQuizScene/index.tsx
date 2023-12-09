@@ -1,90 +1,13 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, useAnimate, useMotionValue } from "framer-motion";
-import albumFiesta from "/Fiesta.jpg";
-import styles from "./styles.module.scss";
-import { RoundRanking } from "../../../components/currentRanking";
+import { RoundRanking } from "../../../../components/currentRanking";
 import { LuVolume2 } from "react-icons/lu";
 import { LuVolumeX } from "react-icons/lu";
 import { TPlayStageState } from "@wits/types";
-import { useUserInteract } from "../../../UserInteractContextProvider";
-import InRanking from "../../../components/scenes/InRanking";
-import { cn } from "../../../lib/utils";
-
-const AnswerButton: React.FC<{
-  isDisabled: boolean;
-  isSelected?: boolean;
-  isAnswer?: boolean;
-  text: string;
-  onClick?: () => void;
-}> = ({ isDisabled, isSelected, isAnswer, text, onClick }) => {
-  const state = useMemo(() => {
-    if (isAnswer) {
-      return "answer";
-    }
-
-    if (isDisabled) {
-      return "disabled";
-    }
-
-    return "idle";
-  }, [isDisabled, isAnswer]);
-
-  return (
-    <motion.button
-      className={cn(
-        `${styles.button}`,
-        {
-          [`${styles.selectedButton}`]: isSelected,
-        },
-        "text-sm font-bold break-keep text-ellipsis whitespace-nowrap overflow-hidden px-2"
-      )}
-      onClick={onClick}
-      animate={state}
-      variants={{
-        idle: {
-          backgroundColor: "",
-          rotate: 0,
-          scale: 1,
-        },
-        answer: {
-          backgroundColor: "green",
-          rotate: [40, -30, 20, -10, 0],
-          scale: [1, 1.1, 1.2, 1.1, 1],
-          transition: { duration: 0.5, ease: "easeInOut" },
-        },
-      }}
-    >
-      {text}
-    </motion.button>
-  );
-};
-
-export const AnswerContainer: React.FC<{
-  answerList?: string[];
-  answerIndex?: number;
-}> = ({ answerIndex, answerList }) => {
-  const [isAnswerable, setIsAnswerable] = useState<boolean>(true);
-  const [selectedIndex, setSelectedIndex] = useState<number>();
-
-  return (
-    <div className={cn("flex flex-wrap items-center justify-center gap-4 p-4")}>
-      {answerList?.map((answer, index) => (
-        <AnswerButton
-          text={answer}
-          isDisabled={!isAnswerable}
-          isSelected={index === selectedIndex}
-          isAnswer={index === answerIndex}
-          onClick={() => {
-            if (isAnswerable) {
-              setSelectedIndex(index);
-              setIsAnswerable(false);
-            }
-          }}
-        />
-      ))}
-    </div>
-  );
-};
+import { useUserInteract } from "../../../../UserInteractContextProvider";
+import InRanking from "../../../../components/scenes/InRanking";
+import { AnswerButtonContainer } from "./components/AnswerButtonContainer";
+import { PrepareRound } from "./PrepareRound";
 
 export const AnswerCard: React.FC<{
   albumUrl: string;
@@ -121,61 +44,7 @@ const enum ERoundState {
   RESULT,
 }
 
-export const PrepareRound: React.FC = () => {
-  return (
-    <motion.div className="flex flex-col items-center justify-center h-full gap-4">
-      <motion.div
-        className="text-2xl font-bold"
-        initial={{ scale: 0.8, rotate: -30 }}
-        animate={{
-          scale: 1,
-          rotate: 0,
-        }}
-        transition={{
-          type: "spring",
-          duration: 0.2,
-          damping: 8,
-        }}
-      >
-        라운드 1
-      </motion.div>
-      <motion.div
-        className="h-24 w-64 rounded shadow-md bg-slate-300 flex items-center justify-center flex-col"
-        initial={{ scale: 0.8, rotate: -30 }}
-        animate={{
-          scale: 1,
-          rotate: 0,
-        }}
-        transition={{
-          type: "spring",
-          duration: 0.2,
-          damping: 6,
-        }}
-      >
-        <div className="font-bold text-base">💯 기본 점수</div>
-        <div className="text-2xl font-bold">300</div>
-      </motion.div>
-      <motion.div
-        className="h-24 w-64 rounded shadow-md bg-slate-300 flex items-center justify-center flex-col"
-        initial={{ scale: 0.8, rotate: -30 }}
-        animate={{
-          scale: 1,
-          rotate: 0,
-        }}
-        transition={{
-          type: "spring",
-          duration: 0.2,
-          damping: 4,
-        }}
-      >
-        <div className="font-bold text-base">💨 속도 점수</div>
-        <div className="text-2xl font-bold">300</div>
-      </motion.div>
-    </motion.div>
-  );
-};
-
-export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
+export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
   state,
 }) => {
   const isUserInteracted = useUserInteract();
@@ -291,7 +160,7 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
             />
           </div>
         </div>
-        <AnswerContainer
+        <AnswerButtonContainer
           answerList={state.data.currentRound.answerList}
           answerIndex={state.data.currentRound.answerIndex}
         />

@@ -16,7 +16,7 @@ export async function playStage(selectedThemeInfo: {
    */
   const MAX_ROUND = 10;
   const ROUND_PREPARE_TIME = 1000 * 5;
-  const ROUND_DURATION = 1000 * 10;
+  const ROUND_DURATION = 1000 * 15;
 
   /**
    * 라운드 준비
@@ -39,14 +39,12 @@ export async function playStage(selectedThemeInfo: {
   const playerScore = new Map<number, number>();
 
   for (let i = 0; i < roundCounts; i++) {
-    const currentRoundSongInfo = selectedThemeSongs[i];
-
     shuffleArray(selectedThemeSongs);
     // 1. 문제 선정 (제목 or 가수)
     // 2. 답변 목록 선정 (정답 외 3개, 총 4개)
-    const correctAnswer = selectedThemeSongs.shift()!;
+    const correctAnswer = selectedThemeSongs[0];
 
-    const answerList = [correctAnswer, ...selectedThemeSongs.slice(0, 3)];
+    const answerList = [correctAnswer, ...selectedThemeSongs.slice(1, 4)];
 
     shuffleArray(answerList);
 
@@ -85,6 +83,9 @@ export async function playStage(selectedThemeInfo: {
 
     serverEventEmitter.emit("stateUpdated", gameInfo);
 
+    /**************************************************
+     * 응답 수신
+     **************************************************/
     const onReceiveAnswer = (userId: number, answerIndex: number) => {
       const receivedAt = Date.now();
 
@@ -120,8 +121,9 @@ export async function playStage(selectedThemeInfo: {
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // TODO: 답변 이벤트 수신 종료
-    // 답변 취합
+    /**************************************************
+     * 결과 처리
+     **************************************************/
     const userResponseArray = Array.from(userResponseMap.entries());
 
     // 정답자

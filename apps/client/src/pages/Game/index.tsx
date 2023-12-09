@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TGameStageState } from "@wits/types";
 import { AnimatePresence } from "framer-motion";
-import { InRoundScene } from "./scenes/InRoundScene";
+import { PlayQuizScene } from "./scenes/PlayQuizScene";
 import SelectThemeScene from "./scenes/SelectThemeScene";
 import { Header } from "../../components/header";
 import { GameDataContext } from "./GameDataContext";
@@ -45,7 +45,7 @@ export default function Game() {
     }
 
     if (gameState.stage === "playQuiz") {
-      return <InRoundScene state={gameState} />;
+      return <PlayQuizScene state={gameState} />;
     }
   }, [gameState]);
 

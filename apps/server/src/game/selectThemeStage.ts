@@ -8,7 +8,7 @@ import { TVoteThemeStageState } from "@wits/types";
  */
 export async function selectThemeStage() {
   // 테마 목록 추출
-  const MAX_SELECT_THEME = 6;
+  const MAX_SELECT_THEME = 4;
 
   const availableThemeRows = await db
     .select()
