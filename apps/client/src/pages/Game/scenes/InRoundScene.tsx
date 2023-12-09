@@ -113,22 +113,18 @@ const enum ERoundState {
 
 export const PrepareRound: React.FC = () => {
   return (
-    <motion.div
-      className="flex flex-col items-center justify-center h-full gap-4"
-      animate={{
-        transition: {
-          staggerChildren: 0.3,
-        },
-      }}
-      transition={{ staggerChildren: 0.3 }}
-    >
+    <motion.div className="flex flex-col items-center justify-center h-full gap-4">
       <motion.div
         className="text-2xl font-bold"
         initial={{ rotate: -30 }}
         animate={{
           rotate: 0,
         }}
-        transition={{ type: "spring", duration: 0.3 }}
+        transition={{
+          type: "spring",
+          duration: 0.3,
+          damping: 8,
+        }}
       >
         라운드 1
       </motion.div>
@@ -138,7 +134,11 @@ export const PrepareRound: React.FC = () => {
         animate={{
           rotate: 0,
         }}
-        transition={{ type: "spring", duration: 0.3 }}
+        transition={{
+          type: "spring",
+          duration: 0.3,
+          damping: 6,
+        }}
       >
         <div className="font-bold text-base">💯 기본 점수</div>
         <div className="text-2xl font-bold">300</div>
@@ -149,7 +149,11 @@ export const PrepareRound: React.FC = () => {
         animate={{
           rotate: 0,
         }}
-        transition={{ type: "spring", duration: 0.3 }}
+        transition={{
+          type: "spring",
+          duration: 0.3,
+          damping: 4,
+        }}
       >
         <div className="font-bold text-base">💨 속도 점수</div>
         <div className="text-2xl font-bold">300</div>

@@ -147,5 +147,7 @@ export async function playStage(selectedThemeInfo: {
       },
     ];
     serverEventEmitter.emit("stateUpdated", gameInfo);
+
+    await new Promise((resolve) => setTimeout(resolve, 3000));
   }
 }
