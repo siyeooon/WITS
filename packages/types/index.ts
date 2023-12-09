@@ -34,3 +34,17 @@ export type TPlayGameData = {
 };
 
 export type TGameState = TSelectThemeRoundData | TPlayGameData;
+
+export type MusicInfo = {
+  songs: {
+    id: number;
+    title: string;
+    artist: string;
+    previewUrl: string;
+    albumUrl: string;
+  }
+  songs_to_themes: 
+  { songId: number;
+    themeId: number; 
+  }
+}
