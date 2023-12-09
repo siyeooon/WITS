@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue } from "framer-motion";
 import albumFiesta from "/Fiesta.jpg";
 import styles from "./styles.module.scss";
-import { CurrentRanking } from "../../../components/currentRanking";
+import { RoundRanking } from "../../../components/currentRanking";
 import { LuVolume2 } from "react-icons/lu";
 import { LuVolumeX } from "react-icons/lu";
 import { TPlayStageState } from "@wits/types";
@@ -110,6 +110,12 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
   };
 
   useEffect(() => {
+    return () => {
+      audioRef.current.src = "";
+    };
+  }, []);
+
+  useEffect(() => {
     audioRef.current.volume = isMuted ? 0 : 1;
   }, [isMuted]);
 
@@ -130,7 +136,11 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
     return () => {
       clearTimeout(waitRoundStartTimeout);
     };
-  }, [state.data]);
+  }, [
+    state.data.currentRound.albumUrl,
+    state.data.currentRound.previewUrl,
+    state.data.currentRound.roundStartAt,
+  ]);
 
   return (
     <>
@@ -198,10 +208,7 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
           answerIndex={state.data.currentRound.answerIndex}
         />
       </motion.div>
-      <CurrentRanking
-        modalIsOpen={modalIsOpen}
-        setModalIsOpen={setModalIsOpen}
-      />
+      <RoundRanking modalIsOpen={true} />
     </>
   );
 };
