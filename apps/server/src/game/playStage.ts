@@ -76,6 +76,7 @@ export async function playStage(selectedThemeInfo: {
           roundNo: i + 1,
           answerList: answerList.map((answer) => answer.songs.title),
           roundStartAt: roundStartAt,
+          roundEndAt: roundEndAt,
         },
         maxRound: roundCounts,
         theme: selectedThemeInfo.name,

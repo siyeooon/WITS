@@ -18,6 +18,7 @@ export type TPlayStageState = {
       previewUrl: string;
       albumUrl: string;
       roundStartAt: number;
+      roundEndAt: number;
       answerList?: string[];
       answerIndex?: number;
       gameResult?: {

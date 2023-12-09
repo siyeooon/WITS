@@ -1,30 +1,5 @@
 @import "../../../styles/common";
 
-.questionContainer {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.questionBox {
-  flex: 1;
-  aspect-ratio: 1/1;
-  text-align: center;
-  color: rgba(103, 0, 255, 1);
-
-  font-family: Inter;
-  font-size: 83.844px;
-  font-style: normal;
-  font-weight: 600;
-
-  border-radius: 14.847px;
-  background: #4a4848;
-
-  margin: 20px;
-}
-
 .button {
   width: 160px;
   height: 50px;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, useMotionValue } from "framer-motion";
+import { motion, useAnimate, useMotionValue } from "framer-motion";
 import albumFiesta from "/Fiesta.jpg";
 import styles from "./styles.module.scss";
 import { RoundRanking } from "../../../components/currentRanking";
@@ -34,7 +34,19 @@ const AnswerButton: React.FC<{
           rotate: 0,
           scale: 1,
         },
+        correct: {
+          backgroundColor: "rgba(103, 0, 255, 1)",
+          rotate: [40, -30, 20, -10, 0],
+          scale: [1, 1.1, 1.2, 1.1, 1],
+          transition: { duration: 0.5, ease: "easeInOut" },
+        },
         answer: {
+          backgroundColor: "rgba(103, 0, 255, 1)",
+          rotate: [40, -30, 20, -10, 0],
+          scale: [1, 1.1, 1.2, 1.1, 1],
+          transition: { duration: 0.5, ease: "easeInOut" },
+        },
+        wrong: {
           backgroundColor: "rgba(103, 0, 255, 1)",
           rotate: [40, -30, 20, -10, 0],
           scale: [1, 1.1, 1.2, 1.1, 1],
@@ -81,23 +93,17 @@ export const AnswerCard: React.FC<{ showAnswer: boolean }> = ({
       </div>
 
       {showAnswer === false ? (
-        <div className="animate-pulse flex flex-row gap-2">
-          <div className="w-48 aspect-square rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none" />
-          <div className="flex flex-col justify-center gap-4">
-            <div className="w-36 h-4 animate-pulse font-bold bg-slate-500 rounded-full" />
-            <div className="w-24 h-4 animate-pulse text-xl font-bold bg-slate-500 rounded-full" />
+        <div className="flex-1 w-full animate-pulse flex flex-row items-center justify-center gap-2 p-2">
+          <div className="text-xl font-bold h-48 w-48 rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none flex items-center justify-center">
+            ?
           </div>
         </div>
       ) : (
-        <div className="flex flex-row gap-2">
+        <div className="flex-1 w-full flex flex-row items-center justify-center gap-2 p-2">
           <img
+            className="h-48 w-48 rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none"
             src={albumFiesta}
-            className="w-48 aspect-square rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none"
           />
-          <div className="flex flex-col justify-center">
-            <div className="text-3xl font-bold">FIESTA</div>
-            <div className="text-xl font-bold">IZ*ONE</div>
-          </div>
         </div>
       )}
     </>
@@ -116,13 +122,14 @@ export const PrepareRound: React.FC = () => {
     <motion.div className="flex flex-col items-center justify-center h-full gap-4">
       <motion.div
         className="text-2xl font-bold"
-        initial={{ rotate: -30 }}
+        initial={{ scale: 0.8, rotate: -30 }}
         animate={{
+          scale: 1,
           rotate: 0,
         }}
         transition={{
           type: "spring",
-          duration: 0.3,
+          duration: 0.2,
           damping: 8,
         }}
       >
@@ -130,13 +137,14 @@ export const PrepareRound: React.FC = () => {
       </motion.div>
       <motion.div
         className="h-24 w-64 rounded shadow-md bg-slate-300 flex items-center justify-center flex-col"
-        initial={{ rotate: -30 }}
+        initial={{ scale: 0.8, rotate: -30 }}
         animate={{
+          scale: 1,
           rotate: 0,
         }}
         transition={{
           type: "spring",
-          duration: 0.3,
+          duration: 0.2,
           damping: 6,
         }}
       >
@@ -145,13 +153,14 @@ export const PrepareRound: React.FC = () => {
       </motion.div>
       <motion.div
         className="h-24 w-64 rounded shadow-md bg-slate-300 flex items-center justify-center flex-col"
-        initial={{ rotate: -30 }}
+        initial={{ scale: 0.8, rotate: -30 }}
         animate={{
+          scale: 1,
           rotate: 0,
         }}
         transition={{
           type: "spring",
-          duration: 0.3,
+          duration: 0.2,
           damping: 4,
         }}
       >
@@ -167,8 +176,9 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
 }) => {
   const isUserInteracted = useUserInteract();
 
+  const [scope, animate] = useAnimate();
+
   const audioRef = useRef<HTMLAudioElement>(new Audio());
-  const albumRef = useRef<HTMLImageElement>(new Image());
 
   const [isMuted, setIsMuted] = useState<boolean>(false);
 
@@ -190,26 +200,27 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
 
   useEffect(() => {
     // 미리 prefetch
-    albumRef.current.src = state.data.currentRound.albumUrl;
     audioRef.current.src = state.data.currentRound.previewUrl;
     audioRef.current.load();
 
     setRoundState(ERoundState.PREPARING);
 
     // 라운드 시작에 맞춰서 재생 및 결과 오픈
-    const waitRoundStartTimeout = setTimeout(() => {
+    const waitRoundStartTimeout = setTimeout(async () => {
       setRoundState(ERoundState.PLAYING);
       audioRef.current.play();
     }, state.data.currentRound.roundStartAt - Date.now());
 
+    const waitRoundFinishTimeout = setTimeout(() => {
+      setRoundState(ERoundState.FINISHED);
+      audioRef.current.pause();
+    }, state.data.currentRound.roundEndAt - Date.now());
+
     return () => {
       clearTimeout(waitRoundStartTimeout);
+      clearTimeout(waitRoundFinishTimeout);
     };
-  }, [
-    state.data.currentRound.albumUrl,
-    state.data.currentRound.previewUrl,
-    state.data.currentRound.roundStartAt,
-  ]);
+  }, [state.data.currentRound.roundNo]);
 
   if (roundState === ERoundState.PREPARING) {
     return <PrepareRound />;
@@ -238,7 +249,10 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
         transition={{ duration: 1 }}
         exit={{ opacity: 0 }}
       >
-        <div className={styles.questionContainer}>
+        <div className="font-bold text-xl text-center">
+          {state.data.currentRound.roundNo} / {state.data.maxRound} 라운드
+        </div>
+        <div className="flex-1 items-center justify-center flex flex-col">
           <AnswerCard showAnswer={roundState === ERoundState.FINISHED} />
         </div>
         <div>
@@ -255,13 +269,8 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
           )}
           <div className="bg-slate-300 rounded-full" style={{ height: "10px" }}>
             <motion.div
-              className="origin-left"
-              style={{
-                backgroundColor: "#6804FD",
-                height: 10,
-                width: "100%",
-                borderRadius: 50,
-              }}
+              ref={scope}
+              className="origin-left h-full w-full bg-[#6804FD]"
               animate={"idle"}
               variants={{
                 idle: {
