@@ -170,38 +170,12 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
   return (
     <>
       <motion.div
-        className="h-full w-full bg-purple-950"
+        className="h-full w-full bg-purple-950 flex flex-col"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
         exit={{ opacity: 0 }}
       >
-        <div className="absolute left-0 top-0">
-          <button
-            className="bg-white"
-            onClick={() => {
-              const selectedMusic =
-                dummyData[Math.floor(Math.random() * dummyData.length)];
-
-              audioRef.current.volume = 0.5;
-              audioRef.current.src = selectedMusic.previewUrl;
-              audioRef.current.load();
-              audioRef.current.play();
-            }}
-          >
-            Change Music
-          </button>
-          <button
-            className="bg-white"
-            onClick={() => {
-              audioRef.current.currentTime = 0;
-              audioRef.current.play();
-            }}
-          >
-            Start From 0
-          </button>
-        </div>
-
         <div className={styles.questionContainer}>
           <AnswerCard showAnswer={showAnswer} />
         </div>
