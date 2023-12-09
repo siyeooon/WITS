@@ -3,12 +3,10 @@ import { createContext, useEffect, useMemo, useState } from "react";
 import SelectThemeScene from "../scenes/SelectThemeScene";
 import { InRoundScene } from "../scenes/InRoundScene";
 import { EGameStatus } from "@wits/types";
-import { useGameState } from "../GameStateContextProvider";
 import { musicData } from "./dummy";
 
 export const SceneController = () => {
   const [round, setGameData] = useState<number>(0);
-  const gameData = useGameState();
 
   const SceneComponent = useMemo(() => {
     if (!gameData) {

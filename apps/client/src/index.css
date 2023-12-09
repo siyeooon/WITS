@@ -1,21 +1,22 @@
+@import url("https://fonts.cdnfonts.com/css/nature-beauty-personal-use");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-    background-color: black;
-    padding: 0;
-    overflow: hidden;
-    margin: 0;
-    font-family: Inter;
-    /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+  padding: 0;
+  overflow: hidden;
+  margin: 0;
+  font-family: Inter;
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
         'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    align-items: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  align-items: center;
 }
 
 code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
 }
-

@@ -3,7 +3,6 @@ import { motion, useMotionValue } from "framer-motion";
 import albumFiesta from "/Fiesta.jpg";
 import styles from "./styles.module.scss";
 import { CurrentRanking } from "../../../components/currentRanking";
-import { Header } from "../../../components/header";
 import { LuVolume2 } from "react-icons/lu";
 import { LuVolumeX } from "react-icons/lu";
 
@@ -187,8 +186,6 @@ export const InRoundScene = () => {
         transition={{ duration: 1 }}
         exit={{ opacity: 0 }}
       >
-        <Header />
-
         <div className="absolute left-0 top-0">
           <button
             className="bg-white"
