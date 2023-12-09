@@ -192,7 +192,8 @@ export const InRoundScene = () => {
             onClick={() => {
               const selectedMusic =
                 dummyData[Math.floor(Math.random() * dummyData.length)];
-
+              
+              audioRef.current.volume= 0.5;
               audioRef.current.src = selectedMusic.previewUrl;
               audioRef.current.load();
               audioRef.current.play();

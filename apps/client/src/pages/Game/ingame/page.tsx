@@ -15,7 +15,7 @@ export const SceneController = () => {
     if (gameData.gameStatus === EGameStatus.SELECT_THEME) {
       return <SelectThemeScene gameData={gameData} />;
     } else if (gameData.gameStatus === EGameStatus.IN_GAME) {
-      return <InRoundScene gameData={musicData[round]} />;
+      return <InRoundScene />;
     }
   }, [gameData]);
 
