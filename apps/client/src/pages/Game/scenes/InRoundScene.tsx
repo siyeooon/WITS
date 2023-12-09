@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, useAnimate, useMotionValue } from "framer-motion";
 import albumFiesta from "/Fiesta.jpg";
 import styles from "./styles.module.scss";
@@ -16,7 +16,19 @@ const AnswerButton: React.FC<{
   isAnswer?: boolean;
   text: string;
   onClick?: () => void;
-}> = ({ isSelected, isAnswer, text, onClick }) => {
+}> = ({ isDisabled, isSelected, isAnswer, text, onClick }) => {
+  const state = useMemo(() => {
+    if (isAnswer) {
+      return "answer";
+    }
+
+    if (isDisabled) {
+      return "disabled";
+    }
+
+    return "idle";
+  }, [isDisabled, isAnswer]);
+
   return (
     <motion.button
       className={cn(
@@ -27,27 +39,15 @@ const AnswerButton: React.FC<{
         "text-sm font-bold break-keep text-ellipsis whitespace-nowrap overflow-hidden px-2"
       )}
       onClick={onClick}
-      animate={isAnswer ? "answer" : "idle"}
+      animate={state}
       variants={{
         idle: {
           backgroundColor: "",
           rotate: 0,
           scale: 1,
         },
-        correct: {
-          backgroundColor: "rgba(103, 0, 255, 1)",
-          rotate: [40, -30, 20, -10, 0],
-          scale: [1, 1.1, 1.2, 1.1, 1],
-          transition: { duration: 0.5, ease: "easeInOut" },
-        },
         answer: {
-          backgroundColor: "rgba(103, 0, 255, 1)",
-          rotate: [40, -30, 20, -10, 0],
-          scale: [1, 1.1, 1.2, 1.1, 1],
-          transition: { duration: 0.5, ease: "easeInOut" },
-        },
-        wrong: {
-          backgroundColor: "rgba(103, 0, 255, 1)",
+          backgroundColor: "green",
           rotate: [40, -30, 20, -10, 0],
           scale: [1, 1.1, 1.2, 1.1, 1],
           transition: { duration: 0.5, ease: "easeInOut" },
@@ -63,7 +63,7 @@ export const AnswerContainer: React.FC<{
   answerList?: string[];
   answerIndex?: number;
 }> = ({ answerIndex, answerList }) => {
-  const [isAnswerable, setIsAnswerable] = useState<boolean>(false);
+  const [isAnswerable, setIsAnswerable] = useState<boolean>(true);
   const [selectedIndex, setSelectedIndex] = useState<number>();
 
   return (
@@ -75,7 +75,10 @@ export const AnswerContainer: React.FC<{
           isSelected={index === selectedIndex}
           isAnswer={index === answerIndex}
           onClick={() => {
-            setSelectedIndex(index);
+            if (isAnswerable) {
+              setSelectedIndex(index);
+              setIsAnswerable(false);
+            }
           }}
         />
       ))}
@@ -83,9 +86,10 @@ export const AnswerContainer: React.FC<{
   );
 };
 
-export const AnswerCard: React.FC<{ showAnswer: boolean }> = ({
-  showAnswer,
-}) => {
+export const AnswerCard: React.FC<{
+  albumUrl: string;
+  showAnswer: boolean;
+}> = ({ showAnswer, albumUrl }) => {
   return (
     <>
       <div className="font-bold mb-8" style={{ fontSize: 20 }}>
@@ -102,7 +106,7 @@ export const AnswerCard: React.FC<{ showAnswer: boolean }> = ({
         <div className="flex-1 w-full flex flex-row items-center justify-center gap-2 p-2">
           <img
             className="h-48 w-48 rounded-2xl bg-slate-500 drop-shadow-md pointer-events-none"
-            src={albumFiesta}
+            src={albumUrl}
           />
         </div>
       )}
@@ -240,7 +244,6 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
           </div>
         </div>
       )}
-      <InRanking quickAnsweredPlayers={["1", "2", "3"]} />
 
       <motion.div
         className="h-full w-full flex flex-col"
@@ -253,7 +256,10 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
           {state.data.currentRound.roundNo} / {state.data.maxRound} 라운드
         </div>
         <div className="flex-1 items-center justify-center flex flex-col">
-          <AnswerCard showAnswer={roundState === ERoundState.FINISHED} />
+          <AnswerCard
+            showAnswer={roundState === ERoundState.FINISHED}
+            albumUrl={state.data.currentRound.albumUrl}
+          />
         </div>
         <div>
           {isMuted ? (
@@ -290,7 +296,10 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
           answerIndex={state.data.currentRound.answerIndex}
         />
       </motion.div>
-      <RoundRanking modalIsOpen={false} />
+      {roundState === ERoundState.FINISHED && (
+        <InRanking quickAnsweredPlayers={["1", "2", "3"]} />
+      )}
+      {/* <RoundRanking modalIsOpen={roundState === ERoundState.FINISHED} /> */}
     </>
   );
 };
