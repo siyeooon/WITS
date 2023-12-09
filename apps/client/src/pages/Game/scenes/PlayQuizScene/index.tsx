@@ -111,7 +111,7 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
       )}
 
       <motion.div
-        className="h-full w-full flex flex-col"
+        className="h-full w-full flex flex-col p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -141,36 +141,35 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
 
         {/* 컨트롤 영역 */}
         <div>
-          {isMuted ? (
-            <LuVolumeX
-              style={{ width: 30, height: 30, margin: 20, cursor: "pointer" }}
-              onClick={toggleMute}
-            />
-          ) : (
-            <LuVolume2
-              style={{ width: 30, height: 30, margin: 20, cursor: "pointer" }}
-              onClick={toggleMute}
-            />
-          )}
-          <div className="bg-slate-300 rounded-full" style={{ height: "10px" }}>
-            <motion.div
-              ref={scope}
-              className="origin-left h-full w-full bg-[#6804FD]"
-              animate={"idle"}
-              variants={{
-                idle: {
-                  scaleX: 1,
-                  transition: { duration: 0 },
-                },
-                animate: {
-                  scaleX: 0,
-                  transition: { duration: 10, ease: "linear" },
-                },
-              }}
-            />
-          </div>
+          <button onClick={toggleMute}>
+            {isMuted ? (
+              <LuVolumeX style={{ width: 30, height: 30 }} />
+            ) : (
+              <LuVolume2 style={{ width: 30, height: 30 }} />
+            )}
+          </button>
         </div>
 
+        <div
+          className="bg-slate-300 rounded-full overflow-hidden my-2"
+          style={{ height: "10px" }}
+        >
+          <motion.div
+            ref={scope}
+            className="origin-left h-full w-full bg-[#6804FD]"
+            animate={"idle"}
+            variants={{
+              idle: {
+                scaleX: 1,
+                transition: { duration: 0 },
+              },
+              animate: {
+                scaleX: 0,
+                transition: { duration: 10, ease: "linear" },
+              },
+            }}
+          />
+        </div>
         {/* 답변 영역 */}
         <AnswerButtonContainer
           answerList={state.data.currentRound.answerList}

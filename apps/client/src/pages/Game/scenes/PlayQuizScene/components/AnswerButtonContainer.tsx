@@ -10,7 +10,7 @@ export const AnswerButtonContainer: React.FC<{
   const [selectedIndex, setSelectedIndex] = useState<number>();
 
   return (
-    <div className={cn("flex flex-col items-center justify-center gap-2 p-4")}>
+    <div className={cn("flex flex-col items-center justify-center gap-2")}>
       {answerList?.map((answer, index) => (
         <AnswerButton
           text={answer}
