@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 import { cn } from "../../lib/utils";
 export const Header = () => {
   const navigate = useNavigate();
@@ -8,7 +8,6 @@ export const Header = () => {
         WITS
       </div>
       <div className="flex flex-row gap-2">
-        <img src="/src/assets/ingame/ranking.png" className="h-10 w-10" onClick={()=>navigate('/ranking')}/>
         <img src="/src/assets/ingame/profile.png" className="h-10 w-10" />
       </div>
     </div>

@@ -17,14 +17,27 @@ const AnswerButton: React.FC<{
   onClick?: () => void;
 }> = ({ isSelected, isAnswer, text, onClick }) => {
   return (
-    <button
+    <motion.button
       className={`${styles.button} ${isSelected ? styles.selectedButton : ""} ${
         isAnswer ? styles.answerButton : ""
       }`}
       onClick={onClick}
+      animate={isAnswer ? "answer" : "idle"}
+      variants={{
+        idle: {
+          rotate: 0,
+          scale: 1,
+        },
+        answer: {
+          backgroundColor: "green",
+          rotate: [40, -30, 20, -10, 0],
+          scale: [1, 1.1, 1.2, 1.1, 1],
+          transition: { duration: 0.5, ease: "easeInOut" },
+        },
+      }}
     >
       {text}
-    </button>
+    </motion.button>
   );
 };
 
@@ -208,7 +221,7 @@ export const InRoundScene: React.FC<{ state: TPlayStageState }> = ({
           answerIndex={state.data.currentRound.answerIndex}
         />
       </motion.div>
-      <RoundRanking modalIsOpen={true} />
+      <RoundRanking modalIsOpen={false} />
     </>
   );
 };
