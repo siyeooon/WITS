@@ -3,23 +3,28 @@ import { useNavigate } from "react-router-dom";
 import googlelogo from "../../assets/googlelogo.png";
 import mainvideo from "../../assets/video.mp4";
 import { auth, provider } from "../../context/loginContext/config";
-import { signInWithPopup } from "firebase/auth";
+import { UserCredential, signInWithPopup } from "firebase/auth";
 
 // Signin 컴포넌트 정의
 const Signin = () => {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState<string>("");
   const navigate = useNavigate();
 
   const handleClick = () => {
-    signInWithPopup(auth, provider).then((data) => {
-      setValue(data.user.email);
-      localStorage.setItem("email", data.user.email);
-      navigate("/ingame");
+    signInWithPopup(auth, provider).then((data: UserCredential) => {
+      if (data.user.email !== null){
+        setValue(data.user.email);
+        localStorage.setItem("email", data.user.email);
+        navigate("/ingame");
+      }
     });
   };
 
   useEffect(() => {
-    setValue(localStorage.getItem("email"));
+    const email = localStorage.getItem("email");
+    if (email !== null){
+      setValue(email);
+    }
   }, []);
 
   return (
