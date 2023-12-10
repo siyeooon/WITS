@@ -31,16 +31,17 @@ FROM base AS installer
     
     RUN turbo build --filter=${PROJECT_NAME}...
 
-FROM ubuntu AS runner
+FROM docker.io/library/nginx:stable-alpine AS runner
     ENV PROJECT_NAME=@wits/client
     ENV PROJECT_PATH=apps/client
     
     ENV NODE_ENV production
 
     WORKDIR /app
+
+    RUN rm /etc/nginx/conf.d/default.conf
     
-    RUN apt-get update
-    RUN apt-get install nginx -y
+    COPY --from=builder /app/${PROJECT_PATH}/nginx/nginx.conf /etc/nginx/conf.d
     COPY --from=installer /app/${PROJECT_PATH}/dist /var/www/html/
 
     EXPOSE 80
