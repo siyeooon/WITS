@@ -43,4 +43,4 @@ FROM base AS runner
 
     EXPOSE 3000
 
-    CMD ["node", "src/index.js"]
+    CMD ["node", "dist/src/index.js"]
