@@ -39,8 +39,8 @@ FROM base AS runner
 
     WORKDIR /app
     
-    COPY --from=installer /app/${PROJECT_PATH}/ ./
+    COPY --from=installer /app ./
 
     EXPOSE 3000
 
-    CMD ["node", "dist/src/index.js"]
+    CMD node ${PROJECT_PATH}/dist/src/index.js
