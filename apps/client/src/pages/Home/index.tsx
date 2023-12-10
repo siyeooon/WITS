@@ -53,7 +53,7 @@ const Home = () => {
         <div className="absolute top-48 z-10 inset-x-0 flex items-center justify-center">
           <h1 className="text-white text-7xl font-logo">WITS</h1>
           <button
-            className="ml-2 text-white text-xl cursor-pointer flex items-center justify-center w-7 h-7 bg-gray-300 rounded-full"
+            className="ml-2 text-white text-xl cursor-pointer flex items-center justify-center w-7 h-7 bg-zinc-50 rounded-full"
             onMouseEnter={() => setShowQuestionMarkDescription(true)}
             onMouseLeave={() => setShowQuestionMarkDescription(false)}
           >
@@ -61,7 +61,7 @@ const Home = () => {
               ❓
             </span>
             {showQuestionMarkDescription && (
-              <div className="absolute bg-gray-300 text-black p-2 rounded-lg mt-2 -top-12 right-4">
+              <div className="absolute bg-neutral-200 text-black p-2 rounded-lg mt-2 -top-12 right-4">
                 <p className="text-sm">
                   다른 유저들과 경쟁으로 최대한 빠르게 노래 제목을 맞춰보세요!
                 </p>

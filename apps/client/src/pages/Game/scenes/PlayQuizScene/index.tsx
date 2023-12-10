@@ -71,7 +71,7 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
     // 미리 prefetch
     audioRef.current.src = state.data.currentRound.previewUrl;
     audioRef.current.load();
-
+    audioRef.current.volume = 0.2;
     setRoundState(ERoundState.PREPARING);
 
     // 라운드 시작에 맞춰서 재생 및 결과 오픈
@@ -99,7 +99,7 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
     <>
       {isUserInteracted === false && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-black">
+          <div className="bg-black" style={{padding: '5px 10px', borderRadius: 5}}>
             <div className="font-bold text-white">
               사운드 재생을 위해서 사용자 입력이 필요합니다
             </div>
@@ -180,7 +180,7 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
           </div>
 
           <div className="flex-1 items-center justify-center flex flex-col">
-            <div className="font-bold mb-4" style={{ fontSize: 20 }}>
+            <div className="font-bold mb-4" style={{ fontSize: 20}}>
               다음 노래의 제목은 무엇일까요?
             </div>
           </div>
@@ -204,7 +204,8 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
           <motion.div
             ref={scope}
             className="origin-left h-full w-full bg-[#6804FD]"
-            animate={"idle"}
+            initial="idle"
+            animate={"animate"}
             variants={{
               idle: {
                 scaleX: 1,
