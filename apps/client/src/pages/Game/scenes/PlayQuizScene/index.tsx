@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, useAnimate, useMotionValue } from "framer-motion";
-import { RoundRanking } from "../../../../components/currentRanking";
 import { LuVolume2 } from "react-icons/lu";
 import { LuVolumeX } from "react-icons/lu";
 import { TPlayStageState } from "@wits/types";
@@ -8,7 +7,7 @@ import { useUserInteract } from "../../../../UserInteractContextProvider";
 import InRanking from "../../../../components/scenes/InRanking";
 import { AnswerButtonContainer } from "./components/AnswerButtonContainer";
 import { PrepareRound } from "./PrepareRound";
-
+import styles from './styles.module.scss'
 export const AnswerCard: React.FC<{
   albumUrl: string;
   showAnswer: boolean;
@@ -43,6 +42,8 @@ const enum ERoundState {
 export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
   state,
 }) => {
+  const [volumeValue, setVolumeValue] = useState(0.3);
+
   const isUserInteracted = useUserInteract();
 
   const [scope, animate] = useAnimate();
@@ -67,11 +68,16 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
     audioRef.current.volume = isMuted ? 0 : 1;
   }, [isMuted]);
 
+  useEffect(()=>{
+    audioRef.current.volume =volumeValue/100;
+  },[volumeValue])
+
+  const fixedMaxValue = 100;
+  const rangeToPercent = useMemo(() => ((fixedMaxValue-volumeValue)), [volumeValue, fixedMaxValue]);
   useEffect(() => {
     // 미리 prefetch
     audioRef.current.src = state.data.currentRound.previewUrl;
     audioRef.current.load();
-    audioRef.current.volume = 0.2;
     setRoundState(ERoundState.PREPARING);
 
     // 라운드 시작에 맞춰서 재생 및 결과 오픈
@@ -105,7 +111,6 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
       />
     );
   }
-
   return (
     <>
       {isUserInteracted === false && (
@@ -201,7 +206,7 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
         </div>
 
         {/* 컨트롤 영역 */}
-        <div>
+        <div style={{display:'flex'}}>
           <button onClick={toggleMute}>
             {isMuted ? (
               <LuVolumeX style={{ width: 30, height: 30 }} />
@@ -209,6 +214,28 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
               <LuVolume2 style={{ width: 30, height: 30 }} />
             )}
           </button>
+          {!isMuted ? ( 
+          <div className={styles.volumeSlide}>
+              <div 
+                  className={styles.volumeSlideInner}
+                  style={{left: 0, right: `${rangeToPercent}%`}}
+                >
+              </div>
+              <div className={styles.volumeRangeWrap}>
+                <input 
+                    className={styles.volumeRangeActive} 
+                    type="range"
+                    min={0}
+                    max={fixedMaxValue}
+                    step="1"
+                    value={volumeValue}
+                    onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
+                      setVolumeValue(Number(e.target.value))
+                    }}
+    
+                />
+              </div>
+        </div>):null}
         </div>
 
         <div
