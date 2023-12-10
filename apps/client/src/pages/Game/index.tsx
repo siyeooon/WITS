@@ -14,7 +14,10 @@ export default function Game() {
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:3000/");
+    const host = window.location.host;
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+
+    const socket = new WebSocket(`${protocol}://${host}/api`);
 
     socket.onopen = () => setIsConnected(true);
     socket.onclose = () => setIsConnected(false);
