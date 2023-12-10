@@ -85,21 +85,35 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
       audioRef.current.pause();
     }, state.data.currentRound.roundEndAt - Date.now());
 
+    const waitRoundResultTimeout = setTimeout(() => {
+      setRoundState(ERoundState.RESULT);
+    }, state.data.currentRound.roundEndAt + 3000);
+
     return () => {
       clearTimeout(waitRoundStartTimeout);
       clearTimeout(waitRoundFinishTimeout);
+      clearTimeout(waitRoundResultTimeout);
     };
   }, [state.data.currentRound.roundNo]);
 
   if (roundState === ERoundState.PREPARING) {
-    return <PrepareRound />;
+    return (
+      <PrepareRound
+        roundNo={state.data.currentRound.roundNo}
+        baseScore={300}
+        speedScore={300}
+      />
+    );
   }
 
   return (
     <>
       {isUserInteracted === false && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-black" style={{padding: '5px 10px', borderRadius: 5}}>
+          <div
+            className="bg-black"
+            style={{ padding: "5px 10px", borderRadius: 5 }}
+          >
             <div className="font-bold text-white">
               사운드 재생을 위해서 사용자 입력이 필요합니다
             </div>
@@ -180,7 +194,7 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
           </div>
 
           <div className="flex-1 items-center justify-center flex flex-col">
-            <div className="font-bold mb-4" style={{ fontSize: 20}}>
+            <div className="font-bold mb-4" style={{ fontSize: 20 }}>
               다음 노래의 제목은 무엇일까요?
             </div>
           </div>
@@ -213,7 +227,7 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
               },
               animate: {
                 scaleX: 0,
-                transition: { duration: 10, ease: "linear" },
+                transition: { duration: 15, ease: "linear" },
               },
             }}
           />
@@ -224,7 +238,7 @@ export const PlayQuizScene: React.FC<{ state: TPlayStageState }> = ({
           answerIndex={state.data.currentRound.answerIndex}
         />
       </motion.div>
-      {roundState === ERoundState.FINISHED && (
+      {roundState === ERoundState.RESULT && (
         <InRanking quickAnsweredPlayers={["1", "2", "3"]} />
       )}
       {/* <RoundRanking modalIsOpen={roundState === ERoundState.FINISHED} /> */}

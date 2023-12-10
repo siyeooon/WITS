@@ -47,11 +47,11 @@ const ThemeSelectCard: React.FC<
       />
       <div className="font-bold text-lg text-center">{name}</div>
 
-      <div className="absolute right-0 top-0 flex flex-row -space-x-2 ">
+      {/* <div className="absolute right-0 top-0 flex flex-row -space-x-2 ">
         <AvatarHolder
           users={[{ name: "A" }, { name: "B" }, { name: "C" }, { name: "D" }]}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

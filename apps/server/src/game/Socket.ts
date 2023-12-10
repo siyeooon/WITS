@@ -1,9 +1,9 @@
 import WebSocket from "ws";
 import http from "node:http";
 import { serverEventEmitter, userEventEmitter } from "./userEventEmitter";
-import { TGameState } from "@wits/types";
+import { TGameStageState } from "@wits/types";
 
-let lastSentState: TGameState | undefined = undefined;
+let lastSentState: TGameStageState | undefined = undefined;
 
 export default (
   wss: WebSocket.Server<typeof WebSocket, typeof http.IncomingMessage>
