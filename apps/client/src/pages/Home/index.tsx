@@ -76,7 +76,7 @@ const Home = () => {
           controls={false}
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src={mainvideo} type="video/webm" />
+          <source src={mainvideo} type="video/mp4" />
         </video>
 
         <div className="absolute bottom-24 inset-x-0 px-4">
