@@ -39,7 +39,7 @@ const Home = () => {
   const [showGameDescription, setShowGameDescription] = useState(false);
   const [showQuestionMarkDescription, setShowQuestionMarkDescription] =
     useState(false);
-
+  const navigate = useNavigate();
   return (
     <div className="absolute w-screen h-screen">
       <div
@@ -80,8 +80,12 @@ const Home = () => {
         </video>
 
         <div className="absolute bottom-24 inset-x-0 px-4">
-          <div className="flex items-center justify-center w-full h-[54px] rounded-lg text-xl font-bold text-gray-600 bg-white cursor-pointer">
-            <Signin />
+          <div 
+              onClick={()=>navigate('/ingame')}
+              className="flex items-center justify-center w-full h-[54px] rounded-lg text-xl font-bold text-gray-600 bg-white cursor-pointer">
+            {/* <Signin />
+             */}
+            🕹️ 게임 시작하기
           </div>
         </div>
       </div>
